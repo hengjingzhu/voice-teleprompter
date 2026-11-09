@@ -1,0 +1,962 @@
+[
+ {
+  "word": "Hi,",
+  "startMs": 480,
+  "endMs": 760,
+  "speaker": "wei",
+  "line": "l01",
+  "script": "Hi,"
+ },
+ {
+  "word": "I'm",
+  "startMs": 1180,
+  "endMs": 1320,
+  "speaker": "wei",
+  "line": "l01",
+  "script": "I'm"
+ },
+ {
+  "word": "Wei.",
+  "startMs": 1400,
+  "endMs": 1660,
+  "speaker": "wei",
+  "line": "l01",
+  "script": "Wei."
+ },
+ {
+  "word": "I'm",
+  "startMs": 2560,
+  "endMs": 2680,
+  "speaker": "jess",
+  "line": "l02",
+  "script": "I'm"
+ },
+ {
+  "word": "Jess,",
+  "startMs": 2800,
+  "endMs": 3140,
+  "speaker": "jess",
+  "line": "l02",
+  "script": "Jess,"
+ },
+ {
+  "word": "and",
+  "startMs": 3480,
+  "endMs": 3580,
+  "speaker": "jess",
+  "line": "l02",
+  "script": "and"
+ },
+ {
+  "word": "we",
+  "startMs": 3680,
+  "endMs": 3840,
+  "speaker": "jess",
+  "line": "l02",
+  "script": "we"
+ },
+ {
+  "word": "built",
+  "startMs": 3880,
+  "endMs": 4019,
+  "speaker": "jess",
+  "line": "l02",
+  "script": "built"
+ },
+ {
+  "word": "ChillerHub.",
+  "startMs": 4180,
+  "endMs": 4700,
+  "speaker": "jess",
+  "line": "l02",
+  "script": "ChillaHub."
+ },
+ {
+  "word": "We",
+  "startMs": 5500,
+  "endMs": 5620,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "We"
+ },
+ {
+  "word": "help",
+  "startMs": 5660,
+  "endMs": 5860,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "help"
+ },
+ {
+  "word": "small",
+  "startMs": 6060,
+  "endMs": 6260,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "small"
+ },
+ {
+  "word": "sellers",
+  "startMs": 6400,
+  "endMs": 6860,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "sellers"
+ },
+ {
+  "word": "reach",
+  "startMs": 6980,
+  "endMs": 7220,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "reach"
+ },
+ {
+  "word": "shoppers",
+  "startMs": 7280,
+  "endMs": 7800,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "shoppers"
+ },
+ {
+  "word": "in",
+  "startMs": 7860,
+  "endMs": 8000,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "in"
+ },
+ {
+  "word": "other",
+  "startMs": 8080,
+  "endMs": 8220,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "other"
+ },
+ {
+  "word": "countries.",
+  "startMs": 8320,
+  "endMs": 8880,
+  "speaker": "wei",
+  "line": "l03",
+  "script": "countries."
+ },
+ {
+  "word": "You",
+  "startMs": 9960,
+  "endMs": 10060,
+  "speaker": "jess",
+  "line": "l04",
+  "script": "You"
+ },
+ {
+  "word": "upload",
+  "startMs": 10140,
+  "endMs": 10480,
+  "speaker": "jess",
+  "line": "l04",
+  "script": "upload"
+ },
+ {
+  "word": "your",
+  "startMs": 10520,
+  "endMs": 10640,
+  "speaker": "jess",
+  "line": "l04",
+  "script": "your"
+ },
+ {
+  "word": "product",
+  "startMs": 10680,
+  "endMs": 10960,
+  "speaker": "jess",
+  "line": "l04",
+  "script": "product"
+ },
+ {
+  "word": "photos",
+  "startMs": 11040,
+  "endMs": 11480,
+  "speaker": "jess",
+  "line": "l04",
+  "script": "photos"
+ },
+ {
+  "word": "and",
+  "startMs": 11500,
+  "endMs": 11600,
+  "speaker": "jess",
+  "line": "l04",
+  "script": "and"
+ },
+ {
+  "word": "details",
+  "startMs": 11680,
+  "endMs": 12100,
+  "speaker": "jess",
+  "line": "l04",
+  "script": "details"
+ },
+ {
+  "word": "once.",
+  "startMs": 12320,
+  "endMs": 12640,
+  "speaker": "jess",
+  "line": "l04",
+  "script": "once."
+ },
+ {
+  "word": "Then",
+  "startMs": 13160,
+  "endMs": 13480,
+  "speaker": "jess",
+  "line": "l05",
+  "script": "Then"
+ },
+ {
+  "word": "you",
+  "startMs": 13560,
+  "endMs": 13680,
+  "speaker": "jess",
+  "line": "l05",
+  "script": "you"
+ },
+ {
+  "word": "check",
+  "startMs": 13760,
+  "endMs": 14040,
+  "speaker": "jess",
+  "line": "l05",
+  "script": "check"
+ },
+ {
+  "word": "and",
+  "startMs": 14100,
+  "endMs": 14180,
+  "speaker": "jess",
+  "line": "l05",
+  "script": "and"
+ },
+ {
+  "word": "confirm",
+  "startMs": 14240,
+  "endMs": 14700,
+  "speaker": "jess",
+  "line": "l05",
+  "script": "confirm"
+ },
+ {
+  "word": "the",
+  "startMs": 14740,
+  "endMs": 14820,
+  "speaker": "jess",
+  "line": "l05",
+  "script": "the"
+ },
+ {
+  "word": "facts.",
+  "startMs": 14900,
+  "endMs": 15300,
+  "speaker": "jess",
+  "line": "l05",
+  "script": "facts."
+ },
+ {
+  "word": "We",
+  "startMs": 15780,
+  "endMs": 15900,
+  "speaker": "jess",
+  "line": "l06",
+  "script": "We"
+ },
+ {
+  "word": "call",
+  "startMs": 15960,
+  "endMs": 16120,
+  "speaker": "jess",
+  "line": "l06",
+  "script": "call"
+ },
+ {
+  "word": "that",
+  "startMs": 16180,
+  "endMs": 16379,
+  "speaker": "jess",
+  "line": "l06",
+  "script": "that"
+ },
+ {
+  "word": "product",
+  "startMs": 16680,
+  "endMs": 17040,
+  "speaker": "jess",
+  "line": "l06",
+  "script": "Product"
+ },
+ {
+  "word": "truth.",
+  "startMs": 17220,
+  "endMs": 17560,
+  "speaker": "jess",
+  "line": "l06",
+  "script": "Truth."
+ },
+ {
+  "word": "From",
+  "startMs": 18360,
+  "endMs": 18540,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "From"
+ },
+ {
+  "word": "product",
+  "startMs": 18600,
+  "endMs": 18900,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "Product"
+ },
+ {
+  "word": "truth,",
+  "startMs": 18980,
+  "endMs": 19300,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "Truth,"
+ },
+ {
+  "word": "we",
+  "startMs": 19560,
+  "endMs": 19660,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "we"
+ },
+ {
+  "word": "create",
+  "startMs": 19720,
+  "endMs": 20040,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "create"
+ },
+ {
+  "word": "images,",
+  "startMs": 20120,
+  "endMs": 20600,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "images,"
+ },
+ {
+  "word": "listings,",
+  "startMs": 20880,
+  "endMs": 21400,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "listings"
+ },
+ {
+  "word": "and",
+  "startMs": 21540,
+  "endMs": 21660,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "and"
+ },
+ {
+  "word": "videos.",
+  "startMs": 21720,
+  "endMs": 22220,
+  "speaker": "wei",
+  "line": "l07",
+  "script": "videos."
+ },
+ {
+  "word": "Each",
+  "startMs": 22740,
+  "endMs": 23000,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "Each"
+ },
+ {
+  "word": "is",
+  "startMs": 23060,
+  "endMs": 23180,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "is"
+ },
+ {
+  "word": "made",
+  "startMs": 23240,
+  "endMs": 23440,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "made"
+ },
+ {
+  "word": "for",
+  "startMs": 23500,
+  "endMs": 23600,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "for"
+ },
+ {
+  "word": "its",
+  "startMs": 23640,
+  "endMs": 23780,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "its"
+ },
+ {
+  "word": "market",
+  "startMs": 23860,
+  "endMs": 24260,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "market"
+ },
+ {
+  "word": "and",
+  "startMs": 24480,
+  "endMs": 24620,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "and"
+ },
+ {
+  "word": "its",
+  "startMs": 24660,
+  "endMs": 24800,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "its"
+ },
+ {
+  "word": "platform.",
+  "startMs": 24840,
+  "endMs": 25360,
+  "speaker": "wei",
+  "line": "l08",
+  "script": "platform."
+ },
+ {
+  "word": "We",
+  "startMs": 26160,
+  "endMs": 26280,
+  "speaker": "jess",
+  "line": "l09",
+  "script": "We"
+ },
+ {
+  "word": "check",
+  "startMs": 26340,
+  "endMs": 26620,
+  "speaker": "jess",
+  "line": "l09",
+  "script": "check"
+ },
+ {
+  "word": "every",
+  "startMs": 26720,
+  "endMs": 26960,
+  "speaker": "jess",
+  "line": "l09",
+  "script": "every"
+ },
+ {
+  "word": "draft",
+  "startMs": 27060,
+  "endMs": 27400,
+  "speaker": "jess",
+  "line": "l09",
+  "script": "draft"
+ },
+ {
+  "word": "against",
+  "startMs": 27460,
+  "endMs": 27820,
+  "speaker": "jess",
+  "line": "l09",
+  "script": "against"
+ },
+ {
+  "word": "product",
+  "startMs": 27860,
+  "endMs": 28160,
+  "speaker": "jess",
+  "line": "l09",
+  "script": "Product"
+ },
+ {
+  "word": "truth.",
+  "startMs": 28220,
+  "endMs": 28520,
+  "speaker": "jess",
+  "line": "l09",
+  "script": "Truth."
+ },
+ {
+  "word": "We",
+  "startMs": 28820,
+  "endMs": 28900,
+  "speaker": "jess",
+  "line": "l10",
+  "script": "We"
+ },
+ {
+  "word": "check",
+  "startMs": 28940,
+  "endMs": 29120,
+  "speaker": "jess",
+  "line": "l10",
+  "script": "check"
+ },
+ {
+  "word": "the",
+  "startMs": 29160,
+  "endMs": 29240,
+  "speaker": "jess",
+  "line": "l10",
+  "script": "the"
+ },
+ {
+  "word": "platform",
+  "startMs": 29280,
+  "endMs": 29760,
+  "speaker": "jess",
+  "line": "l10",
+  "script": "platform"
+ },
+ {
+  "word": "rules",
+  "startMs": 29800,
+  "endMs": 30080,
+  "speaker": "jess",
+  "line": "l10",
+  "script": "rules"
+ },
+ {
+  "word": "too.",
+  "startMs": 30140,
+  "endMs": 30380,
+  "speaker": "jess",
+  "line": "l10",
+  "script": "too."
+ },
+ {
+  "word": "Nothing",
+  "startMs": 30920,
+  "endMs": 31260,
+  "speaker": "jess",
+  "line": "l11",
+  "script": "Nothing"
+ },
+ {
+  "word": "goes",
+  "startMs": 31320,
+  "endMs": 31560,
+  "speaker": "jess",
+  "line": "l11",
+  "script": "goes"
+ },
+ {
+  "word": "live",
+  "startMs": 31620,
+  "endMs": 31960,
+  "speaker": "jess",
+  "line": "l11",
+  "script": "live"
+ },
+ {
+  "word": "until",
+  "startMs": 32020,
+  "endMs": 32340,
+  "speaker": "jess",
+  "line": "l11",
+  "script": "until"
+ },
+ {
+  "word": "you",
+  "startMs": 32560,
+  "endMs": 32780,
+  "speaker": "jess",
+  "line": "l11",
+  "script": "you"
+ },
+ {
+  "word": "approve",
+  "startMs": 32840,
+  "endMs": 33180,
+  "speaker": "jess",
+  "line": "l11",
+  "script": "approve"
+ },
+ {
+  "word": "it.",
+  "startMs": 33240,
+  "endMs": 33380,
+  "speaker": "jess",
+  "line": "l11",
+  "script": "it."
+ },
+ {
+  "word": "Once",
+  "startMs": 34240,
+  "endMs": 34400,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "Once"
+ },
+ {
+  "word": "it's",
+  "startMs": 34460,
+  "endMs": 34620,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "it's"
+ },
+ {
+  "word": "live,",
+  "startMs": 34680,
+  "endMs": 35020,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "live,"
+ },
+ {
+  "word": "we",
+  "startMs": 35380,
+  "endMs": 35480,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "we"
+ },
+ {
+  "word": "learn",
+  "startMs": 35540,
+  "endMs": 35760,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "learn"
+ },
+ {
+  "word": "from",
+  "startMs": 35800,
+  "endMs": 35940,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "from"
+ },
+ {
+  "word": "your",
+  "startMs": 36000,
+  "endMs": 36120,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "your"
+ },
+ {
+  "word": "store",
+  "startMs": 36200,
+  "endMs": 36420,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "store"
+ },
+ {
+  "word": "data.",
+  "startMs": 36460,
+  "endMs": 36780,
+  "speaker": "wei",
+  "line": "l12",
+  "script": "data."
+ },
+ {
+  "word": "We",
+  "startMs": 37620,
+  "endMs": 37740,
+  "speaker": "wei",
+  "line": "l13",
+  "script": "We"
+ },
+ {
+  "word": "read",
+  "startMs": 37780,
+  "endMs": 37980,
+  "speaker": "wei",
+  "line": "l13",
+  "script": "read"
+ },
+ {
+  "word": "customer",
+  "startMs": 38040,
+  "endMs": 38400,
+  "speaker": "wei",
+  "line": "l13",
+  "script": "customer"
+ },
+ {
+  "word": "feedback",
+  "startMs": 38520,
+  "endMs": 38940,
+  "speaker": "wei",
+  "line": "l13",
+  "script": "feedback"
+ },
+ {
+  "word": "as",
+  "startMs": 38980,
+  "endMs": 39100,
+  "speaker": "wei",
+  "line": "l13",
+  "script": "as"
+ },
+ {
+  "word": "well.",
+  "startMs": 39140,
+  "endMs": 39360,
+  "speaker": "wei",
+  "line": "l13",
+  "script": "well."
+ },
+ {
+  "word": "Then",
+  "startMs": 40260,
+  "endMs": 40540,
+  "speaker": "jess",
+  "line": "l14",
+  "script": "Then"
+ },
+ {
+  "word": "we",
+  "startMs": 40600,
+  "endMs": 40740,
+  "speaker": "jess",
+  "line": "l14",
+  "script": "we"
+ },
+ {
+  "word": "suggest",
+  "startMs": 40780,
+  "endMs": 41200,
+  "speaker": "jess",
+  "line": "l14",
+  "script": "suggest"
+ },
+ {
+  "word": "updates.",
+  "startMs": 41280,
+  "endMs": 41800,
+  "speaker": "jess",
+  "line": "l14",
+  "script": "updates."
+ },
+ {
+  "word": "You",
+  "startMs": 42340,
+  "endMs": 42460,
+  "speaker": "jess",
+  "line": "l15",
+  "script": "You"
+ },
+ {
+  "word": "decide",
+  "startMs": 42500,
+  "endMs": 42900,
+  "speaker": "jess",
+  "line": "l15",
+  "script": "decide"
+ },
+ {
+  "word": "what",
+  "startMs": 42940,
+  "endMs": 43080,
+  "speaker": "jess",
+  "line": "l15",
+  "script": "what"
+ },
+ {
+  "word": "changes.",
+  "startMs": 43140,
+  "endMs": 43660,
+  "speaker": "jess",
+  "line": "l15",
+  "script": "changes."
+ },
+ {
+  "word": "We",
+  "startMs": 44120,
+  "endMs": 44240,
+  "speaker": "jess",
+  "line": "l16",
+  "script": "We"
+ },
+ {
+  "word": "never",
+  "startMs": 44400,
+  "endMs": 44680,
+  "speaker": "jess",
+  "line": "l16",
+  "script": "never"
+ },
+ {
+  "word": "change",
+  "startMs": 44740,
+  "endMs": 45000,
+  "speaker": "jess",
+  "line": "l16",
+  "script": "change"
+ },
+ {
+  "word": "your",
+  "startMs": 45060,
+  "endMs": 45140,
+  "speaker": "jess",
+  "line": "l16",
+  "script": "your"
+ },
+ {
+  "word": "facts",
+  "startMs": 45260,
+  "endMs": 45520,
+  "speaker": "jess",
+  "line": "l16",
+  "script": "facts"
+ },
+ {
+  "word": "on",
+  "startMs": 45580,
+  "endMs": 45680,
+  "speaker": "jess",
+  "line": "l16",
+  "script": "on"
+ },
+ {
+  "word": "our",
+  "startMs": 45720,
+  "endMs": 45860,
+  "speaker": "jess",
+  "line": "l16",
+  "script": "our"
+ },
+ {
+  "word": "own.",
+  "startMs": 45920,
+  "endMs": 46100,
+  "speaker": "jess",
+  "line": "l16",
+  "script": "own."
+ },
+ {
+  "word": "Make,",
+  "startMs": 46920,
+  "endMs": 47200,
+  "speaker": "wei",
+  "line": "l17",
+  "script": "Make,"
+ },
+ {
+  "word": "list,",
+  "startMs": 47680,
+  "endMs": 48040,
+  "speaker": "wei",
+  "line": "l17",
+  "script": "list,"
+ },
+ {
+  "word": "learn,",
+  "startMs": 48580,
+  "endMs": 48900,
+  "speaker": "wei",
+  "line": "l17",
+  "script": "learn,"
+ },
+ {
+  "word": "improve.",
+  "startMs": 49360,
+  "endMs": 49980,
+  "speaker": "wei",
+  "line": "l17",
+  "script": "improve."
+ },
+ {
+  "word": "It",
+  "startMs": 50820,
+  "endMs": 50980,
+  "speaker": "jess",
+  "line": "l18",
+  "script": "It"
+ },
+ {
+  "word": "all",
+  "startMs": 51080,
+  "endMs": 51300,
+  "speaker": "jess",
+  "line": "l18",
+  "script": "all"
+ },
+ {
+  "word": "runs",
+  "startMs": 51360,
+  "endMs": 51780,
+  "speaker": "jess",
+  "line": "l18",
+  "script": "runs"
+ },
+ {
+  "word": "on",
+  "startMs": 51840,
+  "endMs": 52020,
+  "speaker": "jess",
+  "line": "l18",
+  "script": "on"
+ },
+ {
+  "word": "product",
+  "startMs": 52060,
+  "endMs": 52420,
+  "speaker": "jess",
+  "line": "l18",
+  "script": "Product"
+ },
+ {
+  "word": "truth.",
+  "startMs": 52500,
+  "endMs": 52780,
+  "speaker": "jess",
+  "line": "l18",
+  "script": "Truth."
+ },
+ {
+  "word": "Thanks",
+  "startMs": 53460,
+  "endMs": 53720,
+  "speaker": "both",
+  "line": "l19",
+  "script": "Thanks"
+ },
+ {
+  "word": "for",
+  "startMs": 53740,
+  "endMs": 53880,
+  "speaker": "both",
+  "line": "l19",
+  "script": "for"
+ },
+ {
+  "word": "watching.",
+  "startMs": 53940,
+  "endMs": 54420,
+  "speaker": "both",
+  "line": "l19",
+  "script": "watching!"
+ }
+]

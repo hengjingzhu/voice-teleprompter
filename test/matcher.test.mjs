@@ -179,6 +179,18 @@ test('alignTimings matches script words to the voice track and leaves rewritten 
   for (let i = 1; i < al.length; i++) if (al[i] && al[i - 1]) assert.ok(al[i].start >= al[i - 1].start);
 });
 
+test('alignTimings uses the script spelling of a word when the timings carry one', () => {
+  const timings = fakeTimings(sample).map((x) => (x.word === 'Brightcup' ? { ...x, word: 'Brightcap', script: 'Brightcup.' } : x));
+  const al = alignTimings(sample.words, timings);
+  const bc = sample.words.findIndex((w) => w.text.startsWith('Brightcup'));
+  const tb = timings.findIndex((x) => x.word === 'Brightcap');
+  assert.ok(tb >= 0);
+  assert.deepEqual(al[bc], { start: timings[tb].startMs, end: timings[tb].endMs });
+  // Without the script field the misspelt word stays unaligned
+  const bare = alignTimings(sample.words, timings.map(({ script, ...x }) => x));
+  assert.equal(bare[bc], null);
+});
+
 test('timed simulation follows the voice track to the end, with restarts and mishearings', () => {
   const timings = fakeTimings(sample);
   const sim = simulate(sample, { timings, start: 600 });
@@ -200,6 +212,24 @@ test('sound check simulation: each speaker reads their first sentence, one after
   assert.deepEqual(finals, ["Hi, I'm Maya.", "I'm Leo, and we run Brightcup."]);
   assert.equal(setup.speech.length, 2);
   assert.ok(setup.speech[1][0] > setup.speech[0][1]);
+});
+
+test('sound check simulation with keepGaps: the voice track is shifted as a whole, so its gaps stay', () => {
+  const timings = fakeTimings(sample);
+  const setup = simulateSetup(sample, { timings, keepGaps: true, gap: 99999 });
+  const leo = timings.findIndex((x) => x.word === 'Leo') - 1; // Leo's first word ("I'm Leo, …")
+  // The first word starts at 600 ms; the track's 0 s therefore sits at 600 - (its first word's start)
+  assert.equal(setup.audioOffsetMs, 600 - timings[0].startMs);
+  assert.deepEqual(setup.speech[0], [600, timings[2].endMs + setup.audioOffsetMs]);
+  assert.equal(setup.speech[1][0], timings[leo].startMs + setup.audioOffsetMs);
+  assert.equal(setup.speech[1][0] - setup.speech[0][0], timings[leo].startMs - timings[0].startMs);
+  // Each word is reported `delay` (350 ms) after the track says it ends
+  const firstLeo = setup.events.find((e) => e.text === "I'm");
+  assert.equal(firstLeo.t, timings[leo].endMs + setup.audioOffsetMs + 350);
+  assert.deepEqual(setup.events.filter((e) => e.final).map((e) => e.text), ["Hi, I'm Maya.", "I'm Leo, and we run Brightcup."]);
+  assert.throws(() => simulateSetup(sample, { keepGaps: true }), /needs timings/);
+  // Without keepGaps there is no offset: the sentences are packed with `gap`
+  assert.equal(simulateSetup(sample, { timings }).audioOffsetMs, undefined);
 });
 
 // ── Replays of real takes ──

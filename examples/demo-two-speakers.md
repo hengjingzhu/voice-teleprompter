@@ -1,24 +1,30 @@
 Target: 1:00
-// Placeholder demo script. It will be replaced by the final demo script.
+// Note for readers: read at an easy pace. The next speaker's name shows before their line.
 
-Mei: Hi, I'm Mei.
-Tom: I'm Tom, and we built ChillaHub.
+Wei: Hi, I'm Wei.
+Jess: I'm Jess, and we built ChillaHub.
+Wei: We help small sellers reach shoppers in other countries.
 
-Mei:
-Small sellers want to sell in more countries.
-But every store has its own rules, and every market wants something different.
+Jess — How it works
+You upload your product photos and details once.
+Then you check and confirm the facts.
+We call that Product Truth.
 
-Tom:
-With ChillaHub, sellers upload product photos and details once.
-They check the facts. We call this Product Truth.
+Wei:
+From Product Truth, we create images, listings and videos.
+Each is made for its market and its platform.
 
-Mei — How it works
-We create images, listings and videos for each market.
-We check every draft against Product Truth and the store's rules.
-Then the seller approves it.
+Jess: We check every draft against Product Truth.
+We check the platform rules too.
+Nothing goes live until you approve it.
 
-Tom:
-After that, we learn from store data and customer feedback.
-And we suggest what to improve next.
+Wei: Once it's live, we learn from your store data.
+We read customer feedback as well.
 
+Jess: Then we suggest updates.
+You decide what changes.
+We never change your facts on our own.
+
+Wei: Make, list, learn, improve.
+Jess: It all runs on Product Truth.
 Both: Thanks for watching!

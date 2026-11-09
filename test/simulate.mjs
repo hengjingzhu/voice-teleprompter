@@ -15,13 +15,14 @@ const keyOf = (text) => text.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 /**
  * Matches each script word to a word of a voice track, so the simulation can follow real timing.
- * timings: [{ word, startMs, endMs }] in reading order (e.g. word timestamps of a TTS track).
+ * timings: [{ word, startMs, endMs, script? }] in reading order (e.g. word timestamps of a TTS track).
+ *   script, when given, is the script's spelling of a word the transcriber spelt differently; it is used to align.
  * Returns per script word { start, end } in ms, or null where the word was not found
  * (those get times interpolated from their neighbours by the caller).
  */
 export function alignTimings(words, timings) {
   const a = words.map((w) => keyOf(w.text));
-  const b = timings.map((x) => keyOf(x.word));
+  const b = timings.map((x) => keyOf(x.script ?? x.word));
   const n = a.length;
   const m = b.length;
   // Longest common subsequence on normalised words
@@ -61,9 +62,14 @@ function fillTimes(times, words) {
 /**
  * Simulated recognition for the sound check page: each speaker reads their own first sentence,
  * one after the other. Times come from `timings` when given (relative to the first word), else from wpm.
- * @returns {{ events: Array<{t:number,text:string,final:boolean}>, speech: number[][] }}
+ * keepGaps (needs timings): keep the voice track's own timing between the sentences instead of `gap`: the
+ * whole track is shifted so its first sentence starts at `start` ms. The demo videos use this to play that
+ * voice (and a camera clip lip-synced to it) during the test. audioOffsetMs is then where the track's 0 s
+ * sits, measured from the moment the test starts.
+ * @returns {{ events: Array<{t:number,text:string,final:boolean}>, speech: number[][], audioOffsetMs?: number }}
  */
-export function simulateSetup(parsed, { timings = null, wpm = 140, gap = 1500, delay = 350 } = {}) {
+export function simulateSetup(parsed, { timings = null, wpm = 140, gap = 1500, delay = 350, start = 600, keepGaps = false } = {}) {
+  if (keepGaps && !timings) throw new Error('simulateSetup: keepGaps needs timings');
   const firsts = [];
   for (const sp of parsed.speakers) {
     const b = parsed.blocks.find((x) => x.speaker === sp && x.paras.length);
@@ -76,10 +82,12 @@ export function simulateSetup(parsed, { timings = null, wpm = 140, gap = 1500, d
   const times = timings ? fillTimes(alignTimings(parsed.words, timings), parsed.words) : null;
   const events = [];
   const speech = [];
-  let t = 600;
+  const shift = keepGaps && firsts.length ? start - times[firsts[0].from].start : 0;
+  let t = start;
   for (const f of firsts) {
+    if (keepGaps) t = times[f.from].start + shift;
     const base = times ? times[f.from].start : 0;
-    const segStart = t;
+    const segStart = Math.round(t);
     const said = [];
     for (let w = f.from; w < f.to; w++) {
       said.push(parsed.words[w].text);
@@ -90,7 +98,7 @@ export function simulateSetup(parsed, { timings = null, wpm = 140, gap = 1500, d
     speech.push([segStart, segEnd]);
     t = segEnd + gap;
   }
-  return { events, speech };
+  return keepGaps ? { events, speech, audioOffsetMs: Math.round(shift) } : { events, speech };
 }
 
 /**

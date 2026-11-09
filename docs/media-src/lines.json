@@ -1,0 +1,197 @@
+{
+  "file": "voice-full.wav",
+  "sampleRate": 48000,
+  "channels": 1,
+  "durationMs": 55123,
+  "loudnessLUFS": -16.01,
+  "truePeakDBTP": -1.87,
+  "leadMs": 400,
+  "tailMs": 600,
+  "gaps": "0.35 s same speaker, 0.7 s speaker change, 0.9 s before the titled block",
+  "both": "l19 = Wei + Jess mixed, each -3 dB, Jess 40 ms later",
+  "opening": {
+    "file": "opening-voice.wav",
+    "startMs": 0,
+    "endMs": 9500,
+    "samples": 456000,
+    "frames24": 228,
+    "lastLineEndMs": 8994
+  },
+  "lines": [
+    {
+      "id": "l01",
+      "speaker": "wei",
+      "text": "Hi, I'm Wei.",
+      "speed": 1,
+      "startMs": 400,
+      "endMs": 1755,
+      "source": "b01.t1/l01.wav"
+    },
+    {
+      "id": "l02",
+      "speaker": "jess",
+      "text": "I'm Jess, and we built ChillaHub.",
+      "speed": 1,
+      "startMs": 2455,
+      "endMs": 4732,
+      "source": "b02.t3/l02.wav"
+    },
+    {
+      "id": "l03",
+      "speaker": "wei",
+      "text": "We help small sellers reach shoppers in other countries.",
+      "speed": 1,
+      "startMs": 5432,
+      "endMs": 8994,
+      "source": "b03.t1/l03.wav"
+    },
+    {
+      "id": "l04",
+      "speaker": "jess",
+      "text": "You upload your product photos and details once.",
+      "block": "How it works",
+      "speed": 1.07,
+      "startMs": 9894,
+      "endMs": 12701,
+      "source": "b04.t1/l04.wav"
+    },
+    {
+      "id": "l05",
+      "speaker": "jess",
+      "text": "Then you check and confirm the facts.",
+      "speed": 1.07,
+      "startMs": 13051,
+      "endMs": 15363,
+      "source": "b04.t1/l05.wav"
+    },
+    {
+      "id": "l06",
+      "speaker": "jess",
+      "text": "We call that Product Truth.",
+      "speed": 1.07,
+      "startMs": 15713,
+      "endMs": 17586,
+      "source": "b04.t1/l06.wav"
+    },
+    {
+      "id": "l07",
+      "speaker": "wei",
+      "text": "From Product Truth, we create images, listings and videos.",
+      "speed": 1.07,
+      "startMs": 18286,
+      "endMs": 22286,
+      "source": "b05.t1/l07.wav"
+    },
+    {
+      "id": "l08",
+      "speaker": "wei",
+      "text": "Each is made for its market and its platform.",
+      "speed": 1.07,
+      "startMs": 22636,
+      "endMs": 25398,
+      "source": "b05.t1/l08.wav"
+    },
+    {
+      "id": "l09",
+      "speaker": "jess",
+      "text": "We check every draft against Product Truth.",
+      "speed": 1.07,
+      "startMs": 26098,
+      "endMs": 28424,
+      "source": "b06.t1/l09.wav"
+    },
+    {
+      "id": "l10",
+      "speaker": "jess",
+      "text": "We check the platform rules too.",
+      "speed": 1.07,
+      "startMs": 28774,
+      "endMs": 30386,
+      "source": "b06.t1/l10.wav"
+    },
+    {
+      "id": "l11",
+      "speaker": "jess",
+      "text": "Nothing goes live until you approve it.",
+      "speed": 1.07,
+      "startMs": 30736,
+      "endMs": 33430,
+      "source": "b06.t1/l11.wav"
+    },
+    {
+      "id": "l12",
+      "speaker": "wei",
+      "text": "Once it's live, we learn from your store data.",
+      "speed": 1.07,
+      "startMs": 34130,
+      "endMs": 37230,
+      "source": "b07.t1/l12.wav"
+    },
+    {
+      "id": "l13",
+      "speaker": "wei",
+      "text": "We read customer feedback as well.",
+      "speed": 1.07,
+      "startMs": 37580,
+      "endMs": 39444,
+      "source": "b07.t1/l13.wav"
+    },
+    {
+      "id": "l14",
+      "speaker": "jess",
+      "text": "Then we suggest updates.",
+      "speed": 1.07,
+      "startMs": 40144,
+      "endMs": 41869,
+      "source": "b08.t1/l14.wav"
+    },
+    {
+      "id": "l15",
+      "speaker": "jess",
+      "text": "You decide what changes.",
+      "speed": 1.07,
+      "startMs": 42219,
+      "endMs": 43717,
+      "source": "b08.t1/l15.wav"
+    },
+    {
+      "id": "l16",
+      "speaker": "jess",
+      "text": "We never change your facts on our own.",
+      "speed": 1.07,
+      "startMs": 44067,
+      "endMs": 46108,
+      "source": "b08.t1/l16.wav"
+    },
+    {
+      "id": "l17",
+      "speaker": "wei",
+      "text": "Make, list, learn, improve.",
+      "speed": 1.07,
+      "startMs": 46808,
+      "endMs": 50060,
+      "source": "b09.t1/l17.wav"
+    },
+    {
+      "id": "l18",
+      "speaker": "jess",
+      "text": "It all runs on Product Truth.",
+      "speed": 1.07,
+      "startMs": 50760,
+      "endMs": 52707,
+      "source": "b10.t1/l18.wav"
+    },
+    {
+      "id": "l19",
+      "speaker": "both",
+      "text": "Thanks for watching!",
+      "speed": 1.07,
+      "startMs": 53407,
+      "endMs": 54523,
+      "source": [
+        "b11.t2/l19w.wav",
+        "b12.t5/l19j.wav"
+      ]
+    }
+  ]
+}
