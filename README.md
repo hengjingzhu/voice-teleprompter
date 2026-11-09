@@ -64,13 +64,25 @@ its install-and-start skill. Ask me before installing anything. Start the telepr
 in Chrome, then tell me what to do on the sound check page.
 ```
 
+Other coding agents work too: ask them to read `AGENTS.md` and follow the skill it names.
+
 The repo tells the agent how to work with it: [`AGENTS.md`](AGENTS.md) for the rules, and four skills in [`.claude/skills/`](.claude/skills) (Claude Code) and [`.agents/skills/`](.agents/skills) (Codex). After the first start you can ask things like:
 
 | You say | The agent |
 | --- | --- |
 | "Load this script: …" | Puts it in `script.md` in the right format without changing your words, lists suspected typos, tells you how long it will take to read. |
-| "Which take is best? Cut it to 1:30." | Lists the takes, cuts the one you choose, and checks that the last word is not cut off. |
-| "It keeps getting stuck on our brand name." | Finds what the recognizer heard instead and adds it to `aliases.json`. |
+| "Which take is best? Cut it to under 1:30." | Suggests a take that reached the end and stopped on its own, and says why. After you choose, it cuts that take and checks that the last word is not cut off. |
+
+### When something goes wrong
+
+Tell the agent what you see, in your own words. For example:
+
+| You say | The agent |
+| --- | --- |
+| "The page won't open." | Checks port 5178. If the teleprompter is already running there, it uses it. If another program has the port, it starts on another one and gives you the new address. |
+| "The browser crashed during a take." | Restarts the server once nothing is being recorded. On start, the server saves what was already recorded as a `-recovered` take in `takes/`. |
+| "The install failed:" and paste the error | Reads the error and fixes the cause. It asks you before installing anything. |
+| "It keeps getting stuck on our brand name." | Finds what the recognizer heard instead, shows you, and adds it to `aliases.json` once you agree. |
 
 Start those later sessions in the `voice-teleprompter` folder, so the agent loads `AGENTS.md` and the skills.
 
