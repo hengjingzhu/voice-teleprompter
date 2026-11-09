@@ -364,13 +364,21 @@ async function stopTake(endedBy) {
   showReview(meta, res, err);
 }
 
+// The server's finish note codes → review text (a later phase moves all UI text to the i18n table)
+const NOTES = {
+  E_NO_FFMPEG: () => 'ffmpeg 没转成，留的是浏览器原文件（没找到 ffmpeg）',
+  E_FFMPEG_FAILED: (detail) => `ffmpeg 没转成，留的是浏览器原文件${detail ? `（${detail}）` : ''}`,
+  E_GONE: () => '服务器上已没有这条的录像文件',
+};
+
 function showReview(meta, res, err) {
   const P = S.takeParsed;
-  const ended = { auto: '自动停', manual: '手动停', discard: '作废' }[meta.endedBy];
+  // Discarding never opens the review (it restarts the countdown), so only these two can end here
+  const ended = { auto: '自动停', manual: '手动停' }[meta.endedBy];
   const bits = [res?.file ?? '没存上', fmtSec(meta.durationMs / 1000), ended, `没对上 ${meta.missed.length} 个词`];
   if (meta.manual.length) bits.push(`滚轮跳过 ${meta.manual.length} 个`);
   if (err) bits.push(`保存出错：${err.message}`);
-  if (res?.note) bits.push(`ffmpeg 没转成，留的是浏览器原文件（${res.note}）`);
+  if (res?.note) bits.push(NOTES[res.note]?.(res.noteDetail) ?? res.note);
   if (res?.uploadFailed) bits.push('上传断过，已另存一份到下载文件夹');
   $('#rv-sum').textContent = bits.join(' · ');
 
