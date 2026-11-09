@@ -5,6 +5,7 @@
 一个在 Chrome 里运行的提词器。你念的时候它在听，稿子跟着你的声音往上走。轮到下一个人之前，会先提示他的名字。它同时用摄像头录像。一个人能用，几个人轮流说也能用。
 
 <!-- media:hero -->
+https://github.com/user-attachments/assets/d9afea7a-e97b-4d12-bd6d-18956d0fb94f
 
 <sub>演示：画面里的人和声音都是 AI 生成的，名字是虚构的。语音识别是模拟的，方便重新生成演示。用真的麦克风时效果一样。</sub>
 
@@ -50,6 +51,7 @@ npm start
 ![试音页](docs/media/zh/setup.png)
 
 <!-- media:setup -->
+https://github.com/user-attachments/assets/5d2e1f5d-e3d3-4294-8638-8289155427a2
 
 - 点 <b>打开摄像头和麦克风</b>。有多个设备时在下拉框里选。预览上的线帮你给两个人构图。
 - 点 <b>标定底噪（保持安静 3 秒）</b>。说话时，音量条要明显越过竖线并变绿。
@@ -63,6 +65,7 @@ npm start
 ![录制中，提示下一位说话人](docs/media/zh/recording.png)
 
 <!-- media:follow -->
+https://github.com/user-attachments/assets/eb941ca1-3fed-499a-b5e9-9313532309bf
 
 - 在任意空白处单击（或按 <kbd>空格</kbd>）开始。先倒数 3、2、1，页面进入全屏，倒数结束才开始录。
 - 看着屏幕上方那条线念。字会跟着你的声音走。轮到别人之前的最后一段，左边会出现他的名字和箭头，比如 `JESS →`。
@@ -72,6 +75,7 @@ npm start
 ### 3. 停止，或者重来
 
 <!-- media:controls -->
+https://github.com/user-attachments/assets/5f8ac14e-03bd-4fe1-b99b-e362a8fb5cc6
 
 - **停止并保存：** 按住左键 1 秒（或按 <kbd>空格</kbd>）。录制时鼠标指针是隐藏的，按住时右上角会有一个小圈在转满。
 - **作废重来：** 按住右键 1 秒（或按 <kbd>X</kbd>）。这一条会保存成名字带 `-x` 的文件，然后马上重新倒数。全屏时 Chrome 会把 <kbd>Esc</kbd> 拿去退出全屏，所以全屏时要用 <kbd>X</kbd>。
@@ -149,6 +153,7 @@ Both: Thanks for watching!
 ![改稿页](docs/media/zh/editor.png)
 
 <!-- media:editor -->
+https://github.com/user-attachments/assets/be21aba2-dd4e-4ae1-bc31-3bccbb722c81
 
 按 <kbd>E</kbd> 打开改稿。右边显示稿子会怎么分成说话人和段落、每段要几秒，预计总时长在顶部。点 <b>保存</b> 写回 `script.md`，旧版本存进 `backups/`。如果你用别的程序改了 `script.md`，页面会自己重新载入（正在录的话，等这条录完再载入）。
 
@@ -172,6 +177,7 @@ Chrome 一般录成 MP4（H.264）。装了 ffmpeg 的话，服务器会把每�
 ## 录出来的样子
 
 <!-- media:opening -->
+https://github.com/user-attachments/assets/faa88844-5ceb-4f46-9c3d-a8a4672174ee
 
 <sub>示意：这段是为演示用 AI 生成的，不是这个工具录的。</sub>
 
