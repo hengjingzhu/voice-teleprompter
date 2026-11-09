@@ -49,7 +49,7 @@ Checked on 2026-11-09 against each program's own page. Rules change from intake 
 
 Antler, Founder Institute and 500 Global do not ask for a founder video on their official application pages.
 
-**Some programs do not want a read script.** Y Combinator writes "Do not recite a written script: Use bullet points instead", and Techstars' tips say not to read from a screen. For those, put short bullet points in `script.md` and talk freely. The text only follows words it can match, so move on with the wheel or the arrow keys. Or use the app to rehearse and time your takes.
+To record one of these: put the program's limit on the first line of the script (`Target: 1:00` for a one-minute video), record a few takes, and keep the best one under the limit.
 
 It works the same for other scripted videos to camera, such as product intros or investor updates.
 

@@ -49,7 +49,7 @@ https://github.com/user-attachments/assets/ff17caf7-fa1d-441f-b3f3-5d81a3b9e676
 
 Antler、Founder Institute、500 Global 的官方申请页上不要求创始人视频。
 
-**有些项目不希望你照稿念。** Y Combinator 写的是「Do not recite a written script: Use bullet points instead」（不要背稿，用要点），Techstars 的建议里也说不要照着屏幕念。申请这类项目时，在 `script.md` 里只写几条要点，自由发挥。字只跟着能对上的词走，所以用滚轮或方向键往下翻。也可以只用它来排练、看每条录多长。
+录这些视频：稿子第一行写上项目要求的时长（1 分钟就写 `Target: 1:00`），多录几条，挑最好的一条，剪到时长以内。
 
 别的对着镜头念稿的视频也一样能用，比如产品介绍、给投资人的进展更新。
 
