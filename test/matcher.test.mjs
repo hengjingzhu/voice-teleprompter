@@ -5,7 +5,7 @@ import { buildAliasMap, normalizeText } from '../public/normalize.js';
 import { parseScript } from '../public/parse.js';
 import { createMatcher, endHeard } from '../public/matcher.js';
 import { estimate, measureWpm } from '../public/estimate.js';
-import { simulate } from './simulate.mjs';
+import { simulate, simulateSetup, alignTimings } from './simulate.mjs';
 
 const root = new URL('..', import.meta.url);
 const aliasMap = buildAliasMap(JSON.parse(fs.readFileSync(new URL('aliases.json', root), 'utf8')));
@@ -146,6 +146,60 @@ test('ending: "Thanks" counts only once the second-to-last block is reached', ()
   assert.equal(endHeard(sample, prev.tokStart + 5, normalizeText('thank you', aliasMap)), true);
   assert.equal(endHeard(sample, prev.tokStart - 1, ['thanks']), false);
   assert.equal(endHeard(sample, 0, ['thanks']), false);
+});
+
+// ── Simulation that follows a voice track (used to make the demo videos) ──
+
+/** Fake word timestamps for the sample: uneven speed, pauses after sentences and between speakers,
+ *  and a few words the transcriber writes differently from the script. */
+function fakeTimings(parsed) {
+  const out = [];
+  let t = 2000;
+  let lastBlock = -1;
+  parsed.words.forEach((w, i) => {
+    if (w.block !== lastBlock) { t += 1200; lastBlock = w.block; }
+    if (w.optional) return;
+    const len = 180 + (i % 5) * 60;
+    let word = w.text.replace(/[^A-Za-z0-9%']/g, '');
+    if (word === '45%') word = 'forty-five';
+    out.push({ word, startMs: t, endMs: t + len });
+    t += len + 40;
+    if (/[.?!]$/.test(w.text)) t += 500;
+  });
+  return out;
+}
+
+test('alignTimings matches script words to the voice track and leaves rewritten ones empty', () => {
+  const timings = fakeTimings(sample);
+  const al = alignTimings(sample.words, timings);
+  const pct = sample.words.findIndex((w) => w.text === '45%');
+  assert.equal(al[pct], null);
+  const found = al.filter(Boolean).length;
+  assert.ok(found >= sample.words.filter((w) => !w.optional).length - 2, `only ${found} words aligned`);
+  for (let i = 1; i < al.length; i++) if (al[i] && al[i - 1]) assert.ok(al[i].start >= al[i - 1].start);
+});
+
+test('timed simulation follows the voice track to the end, with restarts and mishearings', () => {
+  const timings = fakeTimings(sample);
+  const sim = simulate(sample, { timings, start: 600 });
+  // Word k of the track is reported 350 ms after it ends, shifted so the first word starts at 600 ms
+  assert.equal(sim.audioOffsetMs, 600 - timings[0].startMs);
+  const firstEv = sim.events.find((e) => e.text);
+  assert.equal(firstEv.t, timings[0].endMs + sim.audioOffsetMs + 350);
+  for (let i = 1; i < sim.events.length; i++) assert.ok(sim.events[i].t >= sim.events[i - 1].t);
+  assert.ok(sim.events.some((e) => e.restart), 'expected at least one recognition restart');
+  assert.equal(sim.speech.length, sample.blocks.filter((b) => b.tokEnd > b.tokStart).length);
+  const { m, trace } = run(sample, sim);
+  checkTrace(trace);
+  assert.equal(m.cursor, lastHeard(sim));
+});
+
+test('sound check simulation: each speaker reads their first sentence, one after the other', () => {
+  const setup = simulateSetup(sample, { timings: fakeTimings(sample) });
+  const finals = setup.events.filter((e) => e.final).map((e) => e.text);
+  assert.deepEqual(finals, ["Hi, I'm Maya.", "I'm Leo, and we run Brightcup."]);
+  assert.equal(setup.speech.length, 2);
+  assert.ok(setup.speech[1][0] > setup.speech[0][1]);
 });
 
 // ── Replays of real takes ──

@@ -582,8 +582,25 @@ function setFont(px) {
 function stopTest() {
   if (!S.testing) return;
   S.testing = false;
-  S.speech.stop();
+  if (S.sim) {
+    S.simTimers.forEach(clearTimeout);
+    S.simTimers = [];
+    onSpeechStatus('stopped');
+  } else S.speech.stop();
   bind($('#sr-test'), 'sr.test');
+}
+
+// Simulation mode on the sound check page (?sim=…&stage=setup): the recognition test is fed from the
+// fixture's `setup` events instead of the microphone. Each speaker's sentence is its own recognition session.
+function runSimTest() {
+  onSpeechStatus('listening');
+  for (const ev of S.sim.setup?.events ?? []) {
+    S.simTimers.push(setTimeout(() => {
+      if (!S.testing || S.state !== 'setup') return;
+      onSpeech({ texts: [ev.text], latest: ev.text, isFinal: !!ev.final });
+      if (ev.final) onSpeechRestart();
+    }, ev.t));
+  }
 }
 
 // ── Language ────────────────────────────────────────────────
@@ -659,8 +676,11 @@ function bindUi() {
     S.testDone = '';
     S.testCur = '';
     renderTest();
-    S.speech.lang = S.settings.lang;
-    S.speech.start();
+    if (S.sim) runSimTest();
+    else {
+      S.speech.lang = S.settings.lang;
+      S.speech.start();
+    }
     bind($('#sr-test'), 'sr.stopTest');
   });
   $('#fs').addEventListener('input', () => setFont(Number($('#fs').value)));
@@ -780,11 +800,19 @@ async function boot() {
   S.speech = new Speech({ lang: S.settings.lang, onResult: onSpeech, onStatus: onSpeechStatus, onRestart: onSpeechRestart });
   bindUi();
 
-  const sim = new URLSearchParams(location.search).get('sim');
+  const params = new URLSearchParams(location.search);
+  const sim = params.get('sim');
   if (sim) {
     S.sim = await fetch(`/fixtures/${encodeURIComponent(sim)}`).then((r) => r.json());
     bind($('#hint-sim'), 'hint.sim');
-    setState('ready');
+    if (params.get('stage') === 'setup') {
+      // Demo recordings start on the sound check page with a real (or fake) camera; recognition stays simulated
+      setState('setup');
+      try {
+        const cam = await navigator.permissions.query({ name: 'camera' });
+        if (cam.state === 'granted') openMedia();
+      } catch { /* some browsers do not support this query */ }
+    } else setState('ready');
   } else {
     setState('setup');
     if (!speechSupported) bind($('#sr-status'), STATUS.unsupported);
