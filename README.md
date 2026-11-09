@@ -11,6 +11,22 @@ Vertical 9:16 version for phones: [English UI](https://github.com/hengjingzhu/vo
 
 <sub>Demo: the people and voices are AI-generated, the names are fictional, and speech recognition is simulated so the demo can be regenerated. With a real microphone it works the same way.</sub>
 
+## Made for founder videos
+
+Many accelerator and incubator applications ask for a short founder video, often 60, 90 or 120 seconds, with every co-founder on camera. It has to fit the limit and sound natural, and it usually takes many attempts. This app was built for that.
+
+| You need to | How it helps |
+| --- | --- |
+| Stay under 60, 90 or 120 seconds | Put `Target: 1:30` on the first line of the script. The page shows the estimated length next to the limit and turns red when the script is too long. The estimate learns each speaker's reading speed from your takes. |
+| Look at the camera, not at notes | The text follows your voice, so nobody has to scroll. The line you read is near the top of the screen, close to a laptop's webcam. |
+| Take turns with co-founders | Write `Name: text` for each speaker. Before each turn, the next speaker's name appears with an arrow, so hand-offs need less rehearsal. One webcam records everyone. |
+| Record many takes quickly | Click to start. Hold the right mouse button for 1 second to discard and start again at once; hold the left one for 1 second to stop and save. Every take is kept as a video file in `takes/`. |
+| Check that no point was skipped | After each take, the review page marks the words that were not heard in red. |
+| Hand in a file under the limit | Ask your agent: "Which take is best? Cut it to 1:30." It cuts without re-encoding and checks that the last word is not cut off. |
+| Keep the pitch private | Scripts and recordings stay on your computer. Only the microphone audio goes to Google, for speech recognition. |
+
+It works the same for other scripted videos to camera, such as product intros or investor updates.
+
 ## Use it with Claude Code or Codex
 
 Most people hand this repo to a coding agent. Install one of them first ([Claude Code](https://code.claude.com/docs/en/quickstart) or [Codex](https://learn.chatgpt.com/docs/codex/cli)), start it in a new empty folder, and paste:
