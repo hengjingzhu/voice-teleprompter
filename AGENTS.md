@@ -1,4 +1,4 @@
-# voice-teleprompter — notes for coding agents
+# voice-teleprompter: notes for coding agents
 
 This file is for Claude Code, Codex and other coding agents. People usually hand you this repo and ask you to install it, start it, load a new script, or cut a recording. Follow these notes.
 
@@ -8,16 +8,16 @@ A teleprompter that runs in Chrome. It listens to the speakers, scrolls the scri
 
 ## Layout
 
-- `server.mjs` — local server on `http://localhost:5178` (`PORT` env var changes it). Listens on 127.0.0.1 only.
-- `public/` — the page: `index.html`, `styles.css`, `app.js` (screens and controls), `parse.js` (script format), `matcher.js` (follows the voice), `normalize.js`, `estimate.js`, `prompter.js` (scrolling text), `editor.js`, `recorder.js`, `speech.js` (recognition), `vad.js` (voice activity), `i18n.js` (English and Chinese UI text), `shortcuts.js` (mouse and keyboard table).
-- `examples/` — example scripts. `demo-two-speakers.md` is copied to `script.md` on first start.
-- `script.md` — the user's own script. Not in git.
-- `takes/` — recordings (`take-NN-YYYYMMDD-HHMMSS.mp4`) and a `.json` per take with the recognition log (not for `-recovered` takes). Not in git.
-- `aliases.json` — names the recognizer keeps mishearing.
-- `stats.json` — each speaker's measured reading speed. Not in git.
-- `test/` — `npm test`. `test/private/` holds private real-take data and is not in git; those tests skip when it is missing.
-- `scripts/` — `docs-tables.mjs` writes the controls tables in the READMEs from `public/shortcuts.js` (`npm run docs:tables`); `docs-media/` makes the screenshots and demo videos (`npm run docs:media`).
-- `docs/` — how it works (architecture, matching, script format, files).
+- `server.mjs`: local server on `http://localhost:5178` (`PORT` env var changes it). Listens on 127.0.0.1 only.
+- `public/`: the page: `index.html`, `styles.css`, `app.js` (screens and controls), `parse.js` (script format), `matcher.js` (follows the voice), `normalize.js`, `estimate.js`, `prompter.js` (scrolling text), `editor.js`, `recorder.js`, `speech.js` (recognition), `vad.js` (voice activity), `i18n.js` (English and Chinese UI text), `shortcuts.js` (mouse and keyboard table).
+- `examples/`: example scripts. `demo-two-speakers.md` is copied to `script.md` on first start.
+- `script.md`: the user's own script. Not in git.
+- `takes/`: recordings (`take-NN-YYYYMMDD-HHMMSS.mp4`) and a `.json` per take with the recognition log (not for `-recovered` takes). Not in git.
+- `aliases.json`: names the recognizer keeps mishearing.
+- `stats.json`: each speaker's measured reading speed. Not in git.
+- `test/`: `npm test`. `test/private/` holds private real-take data and is not in git; those tests skip when it is missing.
+- `scripts/`: `docs-tables.mjs` writes the controls tables in the READMEs from `public/shortcuts.js` (`npm run docs:tables`); `docs-media/` makes the screenshots and demo videos (`npm run docs:media`).
+- `docs/`: how it works (architecture, matching, script format, files).
 
 ## Requirements
 
@@ -43,7 +43,7 @@ A teleprompter that runs in Chrome. It listens to the speakers, scrolls the scri
 
 Task steps live in skills (`.agents/skills/` for Codex, `.claude/skills/` for Claude Code; the two copies are identical). If your agent did not load them (for example, the repo was cloned during this session), open the `SKILL.md` and follow it:
 
-- `install-and-start` — check the tools, start the server, open the page, tell the user what to do next.
-- `new-script` — turn pasted text into a script, check it, estimate its length.
-- `pick-and-trim` — list the takes, cut the chosen one, check the last word is not cut off.
-- `fix-mishearings` — find names the recognizer keeps getting wrong and add them to `aliases.json`.
+- `install-and-start`: check the tools, start the server, open the page, tell the user what to do next.
+- `new-script`: turn pasted text into a script, check it, estimate its length.
+- `pick-and-trim`: list the takes, cut the chosen one, check the last word is not cut off.
+- `fix-mishearings`: find names the recognizer keeps getting wrong and add them to `aliases.json`.
