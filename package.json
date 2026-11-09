@@ -1,0 +1,16 @@
+{
+  "name": "voice-teleprompter",
+  "version": "1.0.0",
+  "description": "A browser teleprompter that follows your voice, for one or more speakers, and records the webcam.",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "fixture": "node test/make-fixture.mjs"
+  }
+}

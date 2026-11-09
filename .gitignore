@@ -1,0 +1,18 @@
+# Your own script and recordings never go into git
+script.md
+takes/
+backups/
+stats.json
+
+# Private test data (real recordings) stays on your machine
+test/private/
+
+# Generated demo videos (uploaded to GitHub, not committed)
+docs/media-out/
+
+node_modules/
+*.stackdump
+
+# Personal agent settings
+.claude/settings.local.json
+CLAUDE.local.md

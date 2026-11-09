@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>提词器</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body data-state="boot">
+
+<div id="stage">
+  <div id="column"><div id="content"></div></div>
+  <div id="cue"></div>
+  <div id="count" hidden></div>
+</div>
+
+<div id="rec-dot" hidden></div>
+<div id="hold" hidden><svg viewBox="0 0 44 44" aria-hidden="true">
+  <circle class="bg" cx="22" cy="22" r="18"/>
+  <circle class="fg" cx="22" cy="22" r="18"/>
+</svg></div>
+
+<div id="hint" hidden>
+  <span id="hint-est"></span> · 左键单击开始 · 滚轮预览 ·
+  <button data-act="edit">改稿 E</button> · <button data-act="setup">试音 M</button>
+  <span id="hint-sim"></span>
+</div>
+
+<section id="setup" class="overlay" hidden>
+  <div class="wrap">
+    <h1>试音</h1>
+    <p class="muted">两人坐好后在这里确认画面、声音和识别，然后进入提词。</p>
+    <div class="cols">
+      <div>
+        <div class="preview">
+          <video id="pv" autoplay muted playsinline></video>
+          <i class="guide v"></i><i class="guide h"></i>
+        </div>
+        <p><button id="open-media">打开摄像头和麦克风</button></p>
+        <p><label>摄像头 <select id="cam"></select></label></p>
+        <p><label>麦克风 <select id="mic"></select></label></p>
+        <p id="media-info" class="muted"></p>
+      </div>
+      <div>
+        <h2>声音</h2>
+        <div class="meter"><i id="meter-bar"></i><b id="meter-th"></b></div>
+        <p class="muted">竖线是「算在说话」的阈值。说话时条要明显越过竖线、变绿。</p>
+        <p><button id="calib">标定底噪（保持安静 3 秒）</button> <span id="floor"></span></p>
+
+        <h2>识别</h2>
+        <p>
+          <label>语言 <select id="lang"><option>en-US</option><option>en-AU</option><option>en-GB</option></select></label>
+          <button id="sr-test">开始测试识别</button> <span id="sr-status"></span>
+        </p>
+        <p class="muted">两人各读一遍自己的第一句。识别用的是系统默认麦克风，要联网。</p>
+        <div id="sr-text" class="srbox">（还没听到）</div>
+        <ul id="sr-check"></ul>
+
+        <h2>字号</h2>
+        <p><input id="fs" type="range" min="36" max="80" step="2"> <span id="fs-val"></span></p>
+      </div>
+    </div>
+    <p class="setup-foot">
+      <button id="setup-done" class="primary">完成，进入提词</button>
+      <button id="setup-edit">改稿 E</button>
+      <span id="setup-est"></span>
+    </p>
+  </div>
+</section>
+
+<section id="editor" class="overlay" hidden>
+  <header>
+    <b>改稿</b>
+    <span id="ed-est"></span>
+    <span id="ed-wpm" class="muted"></span>
+    <span id="ed-banner"></span>
+    <span class="grow"></span>
+    <button id="ed-save" class="primary">保存 Ctrl+S</button>
+    <button id="ed-close">关闭 Esc</button>
+  </header>
+  <div class="ed-body">
+    <textarea id="ed-text" spellcheck="false"></textarea>
+    <div id="ed-preview"></div>
+  </div>
+</section>
+
+<section id="review" class="overlay" hidden>
+  <header>
+    <span id="rv-sum"></span>
+    <span class="grow"></span>
+    <button id="rv-open">打开 takes 文件夹</button>
+    <button id="rv-setup">回到试音 M</button>
+    <button id="rv-back" class="primary">回到提词</button>
+  </header>
+  <p class="muted legend"><span class="missed">红</span> = 识别没对上（多半是识别听错，连成一片的才可能是真念错）　<span class="skip">黄</span> = 滚轮跳过　<span class="unreached">灰</span> = 没读到　· 单击空白处回到提词</p>
+  <div id="rv-body"></div>
+</section>
+
+<div id="saving" class="overlay" hidden><p>保存中…</p></div>
+<div id="toast" hidden></div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>
