@@ -360,7 +360,7 @@ async function stopTake(endedBy) {
     : Promise.resolve({ file: null, sim: true, stats: null });
   if (discarded) {
     saving
-      .then((r) => { if (r.stats) S.stats = r.stats; toast(t('toast.discardSaved', { file: r.sim ? t('rv.simFile') : r.file })); })
+      .then((r) => { if (r.stats) S.stats = r.stats; toast(r.sim ? t('toast.discardSim') : t('toast.discardSaved', { file: r.file })); })
       .catch((e) => toast(t('toast.discardNotSaved', { msg: e.message })));
     setState('ready');
     startCountdown();

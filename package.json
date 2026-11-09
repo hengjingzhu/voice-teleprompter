@@ -13,7 +13,8 @@
     "test": "node --test \"test/*.test.mjs\"",
     "fixture": "node test/make-fixture.mjs",
     "docs:tables": "node scripts/docs-tables.mjs",
-    "docs:media": "node scripts/docs-media/build.mjs"
+    "docs:media": "node scripts/docs-media/build.mjs",
+    "estimate": "node scripts/estimate.mjs"
   },
   "devDependencies": {
     "playwright-core": "^1.65.0"

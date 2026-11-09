@@ -9,10 +9,10 @@ A teleprompter that runs in Chrome. It listens to the speakers, scrolls the scri
 ## Layout
 
 - `server.mjs` — local server on `http://localhost:5178` (`PORT` env var changes it). Listens on 127.0.0.1 only.
-- `public/` — the page. `app.js` (screens and controls), `parse.js` (script format), `matcher.js` (follows the voice), `normalize.js`, `estimate.js`, `recorder.js`, `speech.js`, `i18n.js` (English and Chinese UI text), `shortcuts.js` (mouse and keyboard table).
+- `public/` — the page: `index.html`, `styles.css`, `app.js` (screens and controls), `parse.js` (script format), `matcher.js` (follows the voice), `normalize.js`, `estimate.js`, `prompter.js` (scrolling text), `editor.js`, `recorder.js`, `speech.js` (recognition), `vad.js` (voice activity), `i18n.js` (English and Chinese UI text), `shortcuts.js` (mouse and keyboard table).
 - `examples/` — example scripts. `demo-two-speakers.md` is copied to `script.md` on first start.
 - `script.md` — the user's own script. Not in git.
-- `takes/` — recordings (`take-NN-YYYYMMDD-HHMMSS.mp4`) and one `.json` per take with the recognition log. Not in git.
+- `takes/` — recordings (`take-NN-YYYYMMDD-HHMMSS.mp4`) and a `.json` per take with the recognition log (not for `-recovered` takes). Not in git.
 - `aliases.json` — names the recognizer keeps mishearing.
 - `stats.json` — each speaker's measured reading speed. Not in git.
 - `test/` — `npm test`. `test/private/` holds private real-take data and is not in git; those tests skip when it is missing.
@@ -29,6 +29,7 @@ A teleprompter that runs in Chrome. It listens to the speakers, scrolls the scri
 
 - Start: `npm start`. It keeps running; start it in the background and leave it running while the user records. Then open `http://localhost:5178` in Chrome.
 - Test: `npm test`. Run it after any code change and after loading a new script (the simulation tests also run on `script.md` when it exists).
+- Check a script: `npm run estimate` (or `npm run estimate -- path/to/file.md`) prints the speakers it found, the word count and the estimated length.
 
 ## Rules
 
@@ -40,7 +41,7 @@ A teleprompter that runs in Chrome. It listens to the speakers, scrolls the scri
 
 ## Skills
 
-Task steps live in skills (`.agents/skills/` for Codex, `.claude/skills/` for Claude Code; the two copies are identical):
+Task steps live in skills (`.agents/skills/` for Codex, `.claude/skills/` for Claude Code; the two copies are identical). If your agent did not load them (for example, the repo was cloned during this session), open the `SKILL.md` and follow it:
 
 - `install-and-start` — check the tools, start the server, open the page, tell the user what to do next.
 - `new-script` — turn pasted text into a script, check it, estimate its length.

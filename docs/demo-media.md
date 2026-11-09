@@ -114,6 +114,8 @@ GitHub plays an MP4 in a README only from an attachment URL.
 
 An issue comment does not need to be posted: the link works as soon as the upload finishes. When the videos change, upload them again and replace the links.
 
+Each README marks the place for each video with `<!-- media:<clip> -->`: `hero`, `setup`, `follow`, `controls`, `editor` from `docs/media-out/<lang>/`, and `opening`, which is `docs/media-src/opening.mp4` itself (the same file for both languages). Replace each marker with the attachment link before publishing.
+
 ## Files
 
 - `scripts/docs-media/build.mjs`: options, fixture, temporary server, the order of the clips, the summary.

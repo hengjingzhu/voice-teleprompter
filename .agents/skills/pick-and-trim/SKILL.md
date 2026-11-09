@@ -7,20 +7,20 @@ description: List the recorded takes of voice-teleprompter and cut the chosen on
 
 Takes are in `takes/`: `take-NN-YYYYMMDD-HHMMSS.mp4` plus a `.json` with the same name. Trimming needs ffmpeg and ffprobe. Name endings:
 - `-x`: a discarded take.
-- `-partial`: the upload broke off during the take. The complete copy is in the user's Downloads folder; use that one.
+- `-partial`: the upload broke off during the take. The complete copy is in the user's Downloads folder, named `take-NN-YYYYMMDD-HHMMSS.mp4` (or `.webm`) without the suffix, as the browser recorded it; use that one.
 - `-recovered`: the page or server stopped mid-take; the server rescued what it had at the next start. It may end abruptly and has no `.json`.
 - `.raw.webm` next to an `.mp4`: the browser's original file, kept after conversion.
 
 1. List the takes. From each `.json` read:
    - `durationMs`
    - `endedBy`: `auto`, `manual` or `discard`
-   - `missed`: script words the recognizer did not match. Most are mishearings, not reading mistakes.
+   - `missed`: indexes of script words the recognizer did not match (use its length; `missedWords` has the words). Most are mishearings, not reading mistakes.
    - `cursor` and `tokenCount`: how far the prompter got.
-   - `manual`: words skipped with the wheel.
+   - `manual`: indexes of words skipped with the wheel (use its length).
 
    Show a short table, newest first. Leave out `-x` takes unless asked.
 2. If the user asks you to pick, prefer takes that ended `auto` and reached the end (`cursor` equals `tokenCount`). Say why. The user decides.
-3. Before cutting, find where the speech really ends, so the last word is not cut off:
+3. Before cutting, get the take's length (`ffprobe -v error -show_entries format=duration -of csv=p=0 <TAKE>`), then find where the speech really ends, so the last word is not cut off:
 
    `ffmpeg -hide_banner -ss <END_MINUS_8> -i <TAKE> -af silencedetect=noise=-45dB:d=0.15 -vn -f null -`
 

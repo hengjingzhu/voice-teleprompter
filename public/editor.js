@@ -1,4 +1,4 @@
-// Script editor: raw text on the left, an estimated duration per block on the right, the total against 90 s at the top.
+// Script editor: raw text on the left, an estimated duration per block on the right, the total at the top (against the Target line, if the script has one).
 // Save writes back to script.md (the server backs up the old version first). If the file changes outside: no local edits → switch to the new version; local edits → offer a choice.
 // Unsaved edits are kept in localStorage as you type: after a reload / close, the editor can restore them next time.
 

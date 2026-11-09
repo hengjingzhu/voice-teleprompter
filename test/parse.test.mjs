@@ -105,6 +105,18 @@ test('every example script parses, has speakers or text, and sets a Target', () 
   }
 });
 
+test('the example script in each README has every speaker it shows', () => {
+  for (const readme of ['README.md', 'README.zh-CN.md']) {
+    const text = fs.readFileSync(new URL(`../${readme}`, import.meta.url), 'utf8');
+    const block = /```text\n(Target:[\s\S]*?)```/.exec(text);
+    assert.ok(block, `${readme}: no example script found`);
+    const p = parseScript(block[1], aliasMap);
+    const named = [...new Set([...block[1].matchAll(/^([A-Z][a-z]+)(?::| —)/gm)].map((m) => m[1]).filter((n) => !/^(Both|Target)$/.test(n)))];
+    assert.deepEqual(p.speakers, named, `${readme}: example speakers`);
+    assert.equal(p.blocks.at(-1).both, true, `${readme}: example should end with a Both block`);
+  }
+});
+
 test('a "Name: text" line seen once, with no empty-colon form, is not a speaker', () => {
   const p = parseScript('Alex:\nNote: this is a line.\nMore text.', aliasMap);
   assert.equal(p.blocks.length, 1);

@@ -40,7 +40,7 @@ export const STRINGS = {
     'setup.floor': 'Noise floor {floor} dB, speech threshold {th} dB',
     'setup.recognition': 'Recognition',
     'setup.lang': 'Language',
-    'setup.srNote': 'Each speaker reads their own first sentence. Recognition uses the system default microphone and needs internet.',
+    'setup.srNote': 'Each speaker reads their own first line of the script. Recognition uses the system default microphone and needs internet.',
     'setup.fontSize': 'Text size',
     'setup.done': 'Done — start prompting',
 
@@ -69,6 +69,7 @@ export const STRINGS = {
     'toast.openMicFirst': 'Open the microphone first',
     'toast.recNotStarted': 'Recording did not start: {msg}',
     'toast.discardSaved': 'Discarded take saved as {file}',
+    'toast.discardSim': 'Take discarded (simulation, nothing saved)',
     'toast.discardNotSaved': 'Discarded take was not saved: {msg}',
 
     'rv.saving': 'Saving…',
@@ -178,7 +179,7 @@ export const STRINGS = {
     'est.scriptTarget': '稿子预计 {time} / {target}',
 
     'setup.title': '试音',
-    'setup.intro': '两人坐好后在这里确认画面、声音和识别，然后进入提词。',
+    'setup.intro': '坐好后在这里确认画面、声音和识别，然后进入提词。',
     'setup.uiLang': '界面语言',
     'setup.openMedia': '打开摄像头和麦克风',
     'setup.reopenMedia': '重新打开摄像头和麦克风',
@@ -191,7 +192,7 @@ export const STRINGS = {
     'setup.floor': '底噪 {floor} dB，说话阈值 {th} dB',
     'setup.recognition': '识别',
     'setup.lang': '语言',
-    'setup.srNote': '两人各读一遍自己的第一句。识别用的是系统默认麦克风，要联网。',
+    'setup.srNote': '每个人读一遍稿子里自己的第一行。识别用的是系统默认麦克风，要联网。',
     'setup.fontSize': '字号',
     'setup.done': '完成，进入提词',
 
@@ -218,6 +219,7 @@ export const STRINGS = {
     'toast.openMicFirst': '先打开麦克风',
     'toast.recNotStarted': '没开始录：{msg}',
     'toast.discardSaved': '作废的这条存为 {file}',
+    'toast.discardSim': '已作废（模拟模式，没有存盘）',
     'toast.discardNotSaved': '作废的这条没存上：{msg}',
 
     'rv.saving': '保存中…',

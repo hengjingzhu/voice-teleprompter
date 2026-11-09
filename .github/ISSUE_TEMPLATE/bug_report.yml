@@ -1,0 +1,93 @@
+name: Bug report
+description: Something in voice-teleprompter does not work as described.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please do not paste private script text or recordings here: issues are public.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and on which screen (sound check, prompter, recording, review, editor).
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open http://localhost:5178
+        2. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: chrome
+    attributes:
+      label: Chrome version
+      description: Open chrome://version and copy the first line.
+      placeholder: e.g. 131.0.6778.86
+    validations:
+      required: true
+
+  - type: dropdown
+    id: recognition-language
+    attributes:
+      label: Recognition language
+      description: The Language setting on the sound check page.
+      options:
+        - en-US
+        - en-AU
+        - en-GB
+    validations:
+      required: false
+
+  - type: textarea
+    id: script
+    attributes:
+      label: Script snippet (optional)
+      description: |
+        The lines where it goes wrong. Do not paste private text: replace names and figures, or write a short script that shows the same problem.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Review page screenshot (optional)
+      description: Drag the image here. The red, yellow and grey words show what the prompter matched.
+    validations:
+      required: false
+
+  - type: textarea
+    id: take-json
+    attributes:
+      label: The take's .json (optional)
+      description: |
+        From the takes/ folder, the file with the same name as the recording. Drag it here to attach it. It contains your whole script (scriptSnapshot) and everything the recognizer heard (transcriptEvents). Remove private text before you attach it.
+    validations:
+      required: false
