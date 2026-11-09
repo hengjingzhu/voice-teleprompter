@@ -40,11 +40,13 @@ const DEVICE_NAMES = {
   zh: { videoinput: 'HD Webcam', audioinput: '默认 - 麦克风 (USB Audio Device)', audiooutput: '默认 - 扬声器' },
 };
 
-// Runs in the page before the app: UI language, a first-visit camera permission state, and the event log.
-function pageInit(lang) {
+// Runs in the page before the app: UI language (and other app settings, e.g. fontSize), a first-visit camera
+// permission state, and the event log.
+function pageInit(lang, settings = {}) {
   return `(() => {
   try {
     const s = JSON.parse(localStorage.getItem('tp.settings') || '{}');
+    Object.assign(s, ${JSON.stringify(settings)});
     s.uiLang = ${JSON.stringify(lang)};
     localStorage.setItem('tp.settings', JSON.stringify(s));
   } catch {}
@@ -85,7 +87,7 @@ function pageInit(lang) {
         const k = (cue.classList.contains('on') ? '1' : '0') + cue.textContent;
         if (k === last) return;
         last = k;
-        log('cue', { on: cue.classList.contains('on'), text: cue.textContent });
+        log('cue', { on: cue.classList.contains('on'), text: cue.textContent, left: cue.getBoundingClientRect().left });
       }).observe(cue, { attributes: true, childList: true, characterData: true, subtree: true });
     }
     const pv = document.getElementById('pv');
@@ -108,14 +110,18 @@ function pageInit(lang) {
 }
 
 export class Session {
-  /** opts: { lang, base, holdText, spaceText } */
+  /**
+   * opts: { lang, base, holdText, spaceText, viewport = VIEW, settings = {} }
+   * settings: app settings written to localStorage tp.settings before the page loads (e.g. { fontSize: 54 })
+   */
   static async create(browser, opts) {
     const s = new Session();
     s.opts = opts;
     s.log = [];
-    s.context = await browser.newContext({ viewport: VIEW, deviceScaleFactor: 1, locale: opts.lang === 'zh' ? 'zh-CN' : 'en-US' });
+    s.viewport = opts.viewport || VIEW;
+    s.context = await browser.newContext({ viewport: s.viewport, deviceScaleFactor: 1, locale: opts.lang === 'zh' ? 'zh-CN' : 'en-US' });
     await s.context.exposeBinding('__dmLog', (_src, ev) => { s.log.push(ev); });
-    await s.context.addInitScript({ content: pageInit(opts.lang) });
+    await s.context.addInitScript({ content: pageInit(opts.lang, opts.settings) });
     const overlay = fs.readFileSync(path.join(HERE, 'overlay.js'), 'utf8');
     await s.context.addInitScript({ content: `window.__DM_CFG = ${JSON.stringify({ hold: opts.holdText, space: opts.spaceText })};\n${overlay}` });
     s.page = await s.context.newPage();
@@ -245,7 +251,7 @@ export class Session {
       c.writes.push(fsp.writeFile(file, Buffer.from(data, 'base64')));
     };
     this.cdp.on('Page.screencastFrame', this.onFrame);
-    await this.cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: VIEW.width, maxHeight: VIEW.height, everyNthFrame: 1 });
+    await this.cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: this.viewport.width, maxHeight: this.viewport.height, everyNthFrame: 1 });
     // The first frame can be older than the start; wait until frames flow
     await sleep(150);
   }

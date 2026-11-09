@@ -5,7 +5,9 @@
 一个在 Chrome 里运行的提词器。你念的时候它在听，稿子跟着你的声音往上走。轮到下一个人之前，会先提示他的名字。它同时用摄像头录像。一个人能用，几个人轮流说也能用。
 
 <!-- media:hero -->
-https://github.com/user-attachments/assets/d9afea7a-e97b-4d12-bd6d-18956d0fb94f
+https://github.com/user-attachments/assets/e18d5071-8894-4f3d-951a-022d9559c54a
+
+手机竖版（9:16）：[中文界面](https://github.com/hengjingzhu/voice-teleprompter/releases/download/v1.0.0/voice-teleprompter-demo-vertical-zh.mp4) · [英文界面](https://github.com/hengjingzhu/voice-teleprompter/releases/download/v1.0.0/voice-teleprompter-demo-vertical-en.mp4)
 
 <sub>演示：画面里的人和声音都是 AI 生成的，名字是虚构的。语音识别是模拟的，方便重新生成演示。用真的麦克风时效果一样。</sub>
 
@@ -177,7 +179,7 @@ Chrome 一般录成 MP4（H.264）。装了 ffmpeg 的话，服务器会把每�
 ## 录出来的样子
 
 <!-- media:opening -->
-https://github.com/user-attachments/assets/faa88844-5ceb-4f46-9c3d-a8a4672174ee
+https://github.com/user-attachments/assets/0a07157e-8e37-40d4-a112-9e373c8b6759
 
 <sub>示意：这段是为演示用 AI 生成的，不是这个工具录的。</sub>
 

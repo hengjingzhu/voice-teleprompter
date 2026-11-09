@@ -1,5 +1,5 @@
 // npm run docs:media — screenshots and demo videos for the READMEs, rebuilt from the source assets.
-//   node scripts/docs-media/build.mjs [--lang en|zh] [--only follow,hero,setup,controls,editor,screenshots]
+//   node scripts/docs-media/build.mjs [--lang en|zh] [--only follow,hero,hero-vertical,setup,controls,editor,screenshots]
 //                                     [--src docs/media-src] [--font-en <file>] [--font-zh <file>] [--keep-tmp] [--headed]
 // Writes docs/media/<lang>/*.png (committed) and docs/media-out/<lang>/*.mp4 + *-sheet.jpg (git-ignored; the MP4s are
 // uploaded to GitHub). See docs/demo-media.md.
@@ -12,17 +12,25 @@ import { createServer } from '../../server.mjs';
 import { tl } from '../../public/i18n.js';
 import { launch } from './capture.mjs';
 import {
-  needTools, setFontFlags, probe, prepareCaption, encodeClip, fitSize, posterFrame, contactSheet, soundOnsets, run,
+  needTools, setFontFlags, probe, prepareCaption, encodeClip, fitSize, posterFrame, contactSheet, soundOnsets, run, CAPTION_STYLE,
 } from './encode.mjs';
 import {
-  captureFollow, planFollow, planHero, captureControls, planControls, captureEditor, planEditor,
+  captureFollow, planFollow, planHero, planHeroVertical, captureControls, planControls, captureEditor, planEditor,
   buildCamFeed, captureSetup, planSetup, captureStills,
 } from './clips.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const CLIPS = ['follow', 'hero', 'setup', 'controls', 'editor', 'screenshots'];
+const CLIPS = ['follow', 'hero', 'hero-vertical', 'setup', 'controls', 'editor', 'screenshots'];
 const MAX_BYTES = 10_000_000; // GitHub attachments: 10 MB
 const ADD_SENTENCE = ' This line was just added.';
+
+// hero-vertical, 1080×1920 for phones: the opening clip on top (16:9 at 1080 wide), the prompter below it captured
+// in a portrait viewport (1080 × capH, so it lays out for that size), the disclosure band at the bottom.
+// fontSize: the prompter text size for this capture only (localStorage tp.settings.fontSize). The app's column is
+// 15 em wide, so the line breaks are the same at every size; 54 px is the largest at which the speaker names and the
+// "JESS →" cue left of the column stay inside 1080 px (56: the cue starts at x 8; 64: names and cue are cut off).
+const VERTICAL = { w: 1080, h: 1920, topH: 608, fontSize: 54, caption: { ...CAPTION_STYLE, size: 24, pillH: 40, padX: 20, bandH: 64 } };
+VERTICAL.capH = VERTICAL.h - VERTICAL.topH - VERTICAL.caption.bandH; // 1248
 
 function parseArgs(argv) {
   const o = { langs: ['en', 'zh'], only: new Set(CLIPS), src: path.join(ROOT, 'docs', 'media-src'), fonts: {}, keepTmp: false, headed: false, camCounter: false };
@@ -170,7 +178,10 @@ async function main() {
   try {
     const sim = await launch({ headed: opt.headed });
     browsers.push(sim);
-    const common = { fixture, lines, timings, voiceMs, heroMs: Math.min(10000, openingMs - 40), addSentence: ADD_SENTENCE, dialogMs: 1500, src, voiceOnsetMs };
+    // The hero (and hero-vertical) is as long as the opening clip, less one frame of margin
+    const heroMs = openingMs - 40;
+    console.log(`Opening clip: ${(openingMs / 1000).toFixed(2)} s; hero ${(heroMs / 1000).toFixed(2)} s`);
+    const common = { fixture, lines, timings, voiceMs, heroMs, addSentence: ADD_SENTENCE, dialogMs: 1500, src, voiceOnsetMs };
 
     const finish = async (lang, name, plan, cap, extra = {}) => {
       const outDir = path.join(ROOT, 'docs', 'media-out', lang);
@@ -179,16 +190,16 @@ async function main() {
       for (const w of plan.warnings) warnings.push(`${lang} ${w}`);
       // The capture log (page states, inputs, camera frames) and the plan, for checking timings by hand
       fs.mkdirSync(path.join(tmpRoot, lang), { recursive: true });
-      fs.writeFileSync(path.join(tmpRoot, lang, `${name}-log.json`), JSON.stringify({ plan: { ...plan, left: undefined }, log: cap.log, frames: cap.frames.map((x) => x.ts) }, null, 1));
+      fs.writeFileSync(path.join(tmpRoot, lang, `${name}-log.json`), JSON.stringify({ plan: { ...plan, left: undefined, top: undefined }, log: cap.log, frames: cap.frames.map((x) => x.ts) }, null, 1));
       const r = await fitSize((crf) => encodeClip({
         frames: cap.frames, from: plan.from, to: plan.to, audio: plan.audio, out, caption: extra.caption,
-        crop: plan.crop || null, size: plan.left ? [640, 360] : [1280, 720], overlays: plan.overlays || [], left: plan.left || null,
+        crop: plan.crop || null, size: plan.size || [1280, 720], overlays: plan.overlays || [], left: plan.left || null, top: plan.top || null,
         crf, tmp: path.join(tmpRoot, lang),
       }), MAX_BYTES);
       const info = await probe(out);
-      await posterFrame(out, Math.min(info.duration - 0.1, Math.max(0, plan.poster)), path.join(mediaDir, `${name}-poster.png`), { photo: name === 'setup' || name === 'hero' });
+      await posterFrame(out, Math.min(info.duration - 0.1, Math.max(0, plan.poster)), path.join(mediaDir, `${name}-poster.png`), { photo: name === 'setup' || name.startsWith('hero') });
       const sheet = path.join(outDir, `${name}-sheet.jpg`);
-      await contactSheet(out, sheet);
+      await contactSheet(out, sheet, plan.sheet);
       sheets.push(sheet);
       const { onsets } = await soundOnsets(out);
       const onsetDelta = plan.expectOnsets.map((e) => {
@@ -208,6 +219,8 @@ async function main() {
     for (const lang of opt.langs) {
       console.log(`[${lang}]`);
       const caption = await prepareCaption(lang, path.join(tmpRoot, 'caption'), opt.fonts);
+      const captionVertical = await prepareCaption(lang, path.join(tmpRoot, 'caption'), opt.fonts, VERTICAL.caption);
+      if (captionVertical.pillW > VERTICAL.w - 32) warnings.push(`${lang} hero-vertical: the caption (${captionVertical.pillW} px) is wider than the frame`);
       const mediaDir = path.join(ROOT, 'docs', 'media', lang);
       fs.mkdirSync(mediaDir, { recursive: true });
       const env = {
@@ -220,6 +233,17 @@ async function main() {
         const plan = await planFollow(cap, env);
         if (opt.only.has('follow')) await finish(lang, 'follow', plan, cap, { caption });
         if (opt.only.has('hero')) await finish(lang, 'hero', planHero(cap, plan, env), cap, { caption });
+      }
+      if (opt.only.has('hero-vertical')) {
+        // The same simulated take again, in a portrait viewport with a larger font
+        const cap = await captureFollow(sim, env, {
+          name: 'hero-vertical', viewport: { width: VERTICAL.w, height: VERTICAL.capH }, settings: { fontSize: VERTICAL.fontSize },
+          startAt: { x: VERTICAL.w / 2, y: Math.round(VERTICAL.capH / 2) }, crop: false, minMs: 0,
+        });
+        const plan = await planHeroVertical(cap, env, VERTICAL);
+        const l = plan.layout;
+        console.log(`  hero-vertical prompter: ${l.fontPx} px, column x ${l.colLeft.toFixed(0)}–${l.colRight.toFixed(0)}, names from x ${l.tagLeft?.toFixed(0)}, cue from x ${l.cueLeft?.toFixed(0)}`);
+        await finish(lang, 'hero-vertical', plan, cap, { caption: captionVertical });
       }
       if (opt.only.has('controls')) {
         const cap = await captureControls(sim, env);
@@ -267,7 +291,7 @@ async function main() {
     console.log(`${r.file.padEnd(38)}${r.duration.toFixed(2).padStart(8)} s ${mb(r.size).padStart(8)} ${String(r.crf).padStart(4)} ${av.padStart(20)} ${lag.padStart(7)}  ${on.padEnd(14)} ${r.w}x${r.h}`);
   }
   console.log('\nA/V ms: gap between where the video shows a moment and where the audio has it, median / worst over n checks.');
-  console.log('  follow, controls, hero: each countdown state change (render lag compensated). setup: each logged camera');
+  console.log('  follow, controls, hero, hero-vertical: each countdown state change (render lag compensated). setup: each logged camera');
   console.log('  frame (lips vs voice). One frame at 30 fps is 33 ms.');
   console.log("onset check ms: first sound in the MP4 (silencedetect) minus where the plan puts the voice's first sound.");
   console.log('\nContact sheets (look at each one):');

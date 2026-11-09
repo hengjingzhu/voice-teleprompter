@@ -4,15 +4,19 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { Session, untilWall, renderLag } from './capture.mjs';
+import { Session, untilWall, renderLag, VIEW } from './capture.mjs';
 import { ffmpeg, fontFile, regionLuma, FPS, outFrameOf } from './encode.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const median = (xs) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[s.length >> 1] : null; };
 
-// The countdown digit sits centred on the reading line (12% from the top); its look changes at every
-// countdown / recording state change, so it measures how late the screencast shows a page change.
-const COUNT_REGION = { x: 560, y: 80, w: 160, h: 130 };
+// The countdown digit (#count) sits centred, its top on the reading line (12% of the height), 2 em of the prompter
+// font tall; its look changes at every countdown / recording state change, so it measures how late the
+// screencast shows a page change. 1280×720 at 52 px: { x: 560, y: 80, w: 160, h: 130 }.
+export function countRegion({ width, height }, fontSize = 52) {
+  return { x: Math.round(width / 2) - 80, y: Math.round(height * 0.12) - 6, w: 160, h: Math.round(2 * fontSize) + 26 };
+}
+const COUNT_REGION = countRegion(VIEW);
 const DEFAULT_LAG = 33;
 
 // Sound check plan: ms after the camera opens
@@ -21,9 +25,9 @@ const XF = 0.25; // crossfade between the idle loop and the opening clip in the 
 const WHEEL_NOTCHES = 3; // review.png: phrases skipped with the wheel (2 get re-matched and show no yellow)
 
 /** Render lag from the state changes that change the countdown digit. */
-async function lagOf(frames, log, from, to) {
+async function lagOf(frames, log, from, to, region = COUNT_REGION) {
   const anchors = log.filter((e) => e.type === 'state' && ['countdown', 'recording'].includes(e.state) && e.t >= from && e.t <= to).map((e) => e.t);
-  const lags = await renderLag(frames, anchors, COUNT_REGION, regionLuma);
+  const lags = await renderLag(frames, anchors, region, regionLuma);
   const L = lags.length ? lags.reduce((a, x) => a + x.lag, 0) / lags.length : DEFAULT_LAG;
   return { L, lags };
 }
@@ -63,34 +67,58 @@ async function textCrop(s) {
   return { x, y: 0, w, h };
 }
 
-// ── follow.mp4 and hero.mp4 ──────────────────────────────────
-export async function captureFollow(browser, env) {
-  const s = await Session.create(browser, env.session);
+/** Where the prompter's column, the speaker tags and the font size are (viewport px). */
+function measureLayout(s) {
+  return s.page.evaluate(() => {
+    const col = document.getElementById('column').getBoundingClientRect();
+    const tags = [...document.querySelectorAll('.who')].map((e) => e.getBoundingClientRect().left);
+    return {
+      fs: parseFloat(getComputedStyle(document.getElementById('stage')).fontSize),
+      colLeft: col.left, colRight: col.right, tagLeft: tags.length ? Math.min(...tags) : null, vw: innerWidth, vh: innerHeight,
+    };
+  });
+}
+
+// ── follow.mp4, hero.mp4 and hero-vertical.mp4 ───────────────
+/**
+ * One take: click, 3-2-1, the prompter follows the voice, until past the end of the hero (and at least minMs after
+ * the click, for follow). opts for hero-vertical: { name, viewport, settings: { fontSize }, startAt, crop: false, minMs: 0 }.
+ */
+export async function captureFollow(browser, env, { name = 'follow', viewport = VIEW, settings = {}, startAt = { x: 640, y: 430 }, crop: withCrop = true, minMs = 16500 } = {}) {
+  const s = await Session.create(browser, { ...env.session, viewport, settings });
   try {
     await s.open('?sim=demo.json');
     await sleep(500);
-    await s.startCast(path.join(env.tmp, 'follow'));
+    await s.startCast(path.join(env.tmp, name));
     await sleep(1100);
     const m = s.mark();
-    const click = await s.click(640, 430);
+    const click = await s.click(startAt.x, startAt.y);
     const down = s.log.slice(m).find((e) => e.type === 'pointerdown');
     const rec = await s.waitState('recording', { from: m, timeout: 8000 });
     await sleep(300);
-    const crop = await textCrop(s);
+    const crop = withCrop ? await textCrop(s) : null;
+    const layout = await measureLayout(s);
+    // The hero runs from voice-full's 0 s (render lag < 100 ms after this) for heroMs, whatever the opening's length
     const heroEnd = rec.t + env.fixture.audioOffsetMs + env.heroMs + 800;
-    await untilWall(Math.max(down.t + 16500, heroEnd));
+    await untilWall(Math.max(down.t + minMs, heroEnd));
     const frames = await s.stopCast();
-    return { frames, log: s.log.slice(), down, click, rec, crop };
+    return { frames, log: s.log.slice(), down, click, rec, crop, layout, region: countRegion(viewport, layout.fs) };
   } finally {
     await s.close();
   }
 }
 
-export async function planFollow(cap, env) {
+/** Render lag of a take and where voice-full's 0 s plays on its capture timeline. */
+async function takeTiming(cap, env) {
   const { frames, log, down, rec } = cap;
+  const { L, lags } = await lagOf(frames, log, down.t - 900, rec.t + 100, cap.region);
+  return { L, lags, voiceAt: rec.t + env.fixture.audioOffsetMs + L };
+}
+
+export async function planFollow(cap, env) {
+  const { log, down, rec } = cap;
   const from = down.t - 900;
-  const { L, lags } = await lagOf(frames, log, from, rec.t + 100);
-  const voiceAt = rec.t + env.fixture.audioOffsetMs + L; // where voice-full's 0 s plays on the capture timeline
+  const { L, lags, voiceAt } = await takeTiming(cap, env); // voiceAt: where voice-full's 0 s plays on the capture timeline
   // End on a line end: the last one that leaves the clip at most 15.5 s long (and at least 9 s)
   const ends = env.lines.map((l) => voiceAt + l.endMs + 650).filter((t) => t - from <= 15500 && t - from >= 9000);
   const to = ends.length ? Math.max(...ends) : from + 15000;
@@ -112,19 +140,55 @@ export async function planFollow(cap, env) {
   };
 }
 
+// Hero poster: just after the second line starts (both people on screen, the cue has moved)
+const heroPoster = (env) => Math.min(env.heroMs / 1000 - 0.5, (env.lines[1]?.startMs ?? 3000) / 1000 + 0.6);
+
 export function planHero(cap, follow, env) {
   const from = follow.voiceAt; // the opening clip's 0 s = voice-full's 0 s
   const to = from + env.heroMs;
   return {
     from, to, L: follow.L, lags: follow.lags,
     crop: cap.crop,
+    size: [640, 360],
     left: { file: env.src.opening, w: 640, start: 0 },
-    audio: [{ leftAudio: true }],
+    audio: [{ sideAudio: true }],
     // Same render lag as follow; the 30 fps grid starts elsewhere, so the frame rounding differs
     av: avError(follow.lags, follow.L, from),
     expectOnsets: [env.voiceOnsetMs / 1000],
-    poster: Math.min(env.heroMs / 1000 - 0.5, (env.lines[1]?.startMs ?? 3000) / 1000 + 0.6),
+    poster: heroPoster(env),
     warnings: [],
+  };
+}
+
+/**
+ * hero-vertical: the opening clip on top (layout.w × layout.topH), below it the take captured in a portrait
+ * viewport (layout.w × layout.capH, uncropped). Timed like the hero: the clip's 0 s = the opening's 0 s =
+ * voice-full's 0 s on this capture's own timeline.
+ */
+export async function planHeroVertical(cap, env, layout) {
+  const { L, lags, voiceAt } = await takeTiming(cap, env);
+  const from = voiceAt;
+  const to = from + env.heroMs;
+  const { fs: fontPx, colLeft, colRight, tagLeft } = cap.layout;
+  // The cue ("JESS →") hangs left of the column; its width changes with the name. Every cue shown up to the end.
+  const cues = cap.log.filter((e) => e.type === 'cue' && e.on && e.left != null && e.t <= to).map((e) => e.left);
+  const cueLeft = cues.length ? Math.min(...cues) : null;
+  const warnings = [];
+  if (cap.layout.vw !== layout.w || cap.layout.vh !== layout.capH) warnings.push(`hero-vertical: viewport ${cap.layout.vw}x${cap.layout.vh}, expected ${layout.w}x${layout.capH}`);
+  if (tagLeft != null && tagLeft < 0) warnings.push(`hero-vertical: the speaker names start at x ${tagLeft.toFixed(0)} (cut off); lower the font size`);
+  if (cueLeft != null && cueLeft < 0) warnings.push(`hero-vertical: the cue starts at x ${cueLeft.toFixed(0)} (cut off); lower the font size`);
+  if (colLeft < 0 || colRight > layout.w) warnings.push(`hero-vertical: the text column (${colLeft.toFixed(0)}–${colRight.toFixed(0)}) is wider than the frame`);
+  return {
+    from, to, L, lags,
+    size: [layout.w, layout.capH],
+    top: { file: env.src.opening, h: layout.topH, start: 0 },
+    audio: [{ sideAudio: true }],
+    av: avError(lags, L, from),
+    expectOnsets: [env.voiceOnsetMs / 1000],
+    poster: heroPoster(env),
+    sheet: { w: 300, cols: 6 },
+    layout: { fontPx, colLeft, colRight, tagLeft, cueLeft },
+    warnings,
   };
 }
 

@@ -5,7 +5,9 @@
 A teleprompter that runs in Chrome. It listens while you read, scrolls the script with your voice, shows the next speaker's name just before their turn, and records the webcam. It works for one speaker or several taking turns.
 
 <!-- media:hero -->
-https://github.com/user-attachments/assets/608387d4-91f3-4330-9181-1bb5c166a56c
+https://github.com/user-attachments/assets/bd3078d3-245e-4f53-8317-ed04aad76ec8
+
+Vertical 9:16 version for phones: [English UI](https://github.com/hengjingzhu/voice-teleprompter/releases/download/v1.0.0/voice-teleprompter-demo-vertical-en.mp4) · [Chinese UI](https://github.com/hengjingzhu/voice-teleprompter/releases/download/v1.0.0/voice-teleprompter-demo-vertical-zh.mp4)
 
 <sub>Demo: the people and voices are AI-generated, the names are fictional, and speech recognition is simulated so the demo can be regenerated. With a real microphone it works the same way.</sub>
 
@@ -177,7 +179,7 @@ Chrome usually records MP4 (H.264). With ffmpeg installed, the server turns each
 ## Example output
 
 <!-- media:opening -->
-https://github.com/user-attachments/assets/faa88844-5ceb-4f46-9c3d-a8a4672174ee
+https://github.com/user-attachments/assets/0a07157e-8e37-40d4-a112-9e373c8b6759
 
 <sub>Illustration of what a take looks like. This clip was generated with AI for the demo; it was not recorded by the app.</sub>
 

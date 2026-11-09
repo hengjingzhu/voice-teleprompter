@@ -12,7 +12,7 @@
   "opening": {
     "file": "opening-voice.wav",
     "startMs": 0,
-    "endMs": 9500,
+    "endMs": 18300,
     "samples": 456000,
     "frames24": 228,
     "lastLineEndMs": 8994

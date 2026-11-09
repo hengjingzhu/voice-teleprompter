@@ -129,38 +129,43 @@ export function pillPng(w, h, [r, g, b, a]) {
 }
 
 // ── Caption ────────────────────────────────────────────────────
-export const CAPTION_STYLE = { size: 18, pillH: 28, padX: 14, pill: [24, 24, 27, 200], band: 'white' };
+// bandH: the white band under the picture that holds the pill
+export const CAPTION_STYLE = { size: 18, pillH: 28, padX: 14, pill: [24, 24, 27, 200], band: 'white', bandH: BAND };
 
-/** Measures the caption with the real font (ffmpeg bbox) and writes the pill PNG and the text file. */
-export async function prepareCaption(lang, dir, fonts) {
+/**
+ * Measures the caption with the real font (ffmpeg bbox) and writes the pill PNG and the text file.
+ * style: CAPTION_STYLE, or a copy with other sizes (hero-vertical: a taller band and a larger font).
+ */
+export async function prepareCaption(lang, dir, fonts, style = CAPTION_STYLE) {
   const font = fontFile(lang, fonts);
   const text = CAPTIONS[lang];
   fs.mkdirSync(dir, { recursive: true });
   const textFile = path.join(dir, `caption-${lang}.txt`);
   fs.writeFileSync(textFile, text);
-  const { stderr } = await run('ffmpeg', ['-hide_banner', '-loglevel', 'info', '-f', 'lavfi', '-i', 'color=c=black:s=1800x80',
-    '-vf', `drawtext=fontfile='${font}':textfile=${fpath(textFile)}:expansion=none:fontsize=${CAPTION_STYLE.size}:fontcolor=white:x=10:y=20,bbox=min_val=60`,
+  const { stderr } = await run('ffmpeg', ['-hide_banner', '-loglevel', 'info', '-f', 'lavfi', '-i', 'color=c=black:s=1800x120',
+    '-vf', `drawtext=fontfile='${font}':textfile=${fpath(textFile)}:expansion=none:fontsize=${style.size}:fontcolor=white:x=10:y=20,bbox=min_val=60`,
     '-frames:v', '1', '-f', 'null', '-']);
   const m = /x1:(\d+) x2:(\d+)/.exec(stderr);
   if (!m) throw new Error(`could not measure the ${lang} caption`);
   const textW = Number(m[2]) - 10 + 1;
-  const pillW = textW + 2 * CAPTION_STYLE.padX;
-  const pill = path.join(dir, `pill-${lang}.png`);
-  fs.writeFileSync(pill, pillPng(pillW, CAPTION_STYLE.pillH, CAPTION_STYLE.pill));
-  return { lang, font, text, textFile, pill, pillW, textW };
+  const pillW = textW + 2 * style.padX;
+  const pill = path.join(dir, `pill-${lang}-${style.size}.png`);
+  fs.writeFileSync(pill, pillPng(pillW, style.pillH, style.pill));
+  return { lang, font, text, textFile, pill, pillW, textW, style };
 }
 
 /** Filter steps (after [in]) that add the white band and the caption pill + text; returns { graph, out }. */
 function captionGraph(inLabel, cap, pillIdx, width, height) {
-  const H = height + BAND;
-  const py = height + Math.round((BAND - CAPTION_STYLE.pillH) / 2);
+  const st = cap.style || CAPTION_STYLE;
+  const H = height + st.bandH;
+  const py = height + Math.round((st.bandH - st.pillH) / 2);
   const px = Math.round((width - cap.pillW) / 2);
-  const cy = py + CAPTION_STYLE.pillH / 2;
+  const cy = py + st.pillH / 2;
   return {
     graph: [
-      `[${inLabel}]pad=${width}:${H}:0:0:color=${CAPTION_STYLE.band}[cb0]`,
+      `[${inLabel}]pad=${width}:${H}:0:0:color=${st.band}[cb0]`,
       `[cb0][${pillIdx}:v]overlay=${px}:${py}[cb1]`,
-      `[cb1]drawtext=fontfile='${cap.font}':textfile=${fpath(cap.textFile)}:expansion=none:fontsize=${CAPTION_STYLE.size}:fontcolor=white:x=(w-tw)/2:y=${cy}-(ascent-descent)/2+1[cb2]`,
+      `[cb1]drawtext=fontfile='${cap.font}':textfile=${fpath(cap.textFile)}:expansion=none:fontsize=${st.size}:fontcolor=white:x=(w-tw)/2:y=${cy}-(ascent-descent)/2+1[cb2]`,
     ].join(';'),
     out: 'cb2',
     height: H,
@@ -197,9 +202,12 @@ export const outFrameOf = (ts, from) => Math.round(((ts - from) / 1000) * FPS);
  *   frames, from, to (wall ms); audio: [{ file, at (wall ms where the file's `start` s plays), start = 0, end = null (s), fade = 0.06 }]
  *   crop: { x, y, w, h } of the 1280×720 capture; size: [w, h] output picture (before the caption band)
  *   overlays: [{ file, x, y, from, to } (wall ms)] PNGs shown over the picture
- *   left: { file, start = 0 } a video placed left of the capture (hero); its audio is used when audio is empty and leftAudio is set
+ *   left: { file, w, start = 0 } a video left of the capture (hero: hstack), scaled and cropped to w × size[1]
+ *   top: { file, h, start = 0 } a video above the capture (hero-vertical: vstack), scaled and cropped to size[0] × h
+ *   An audio entry { sideAudio: true } uses the left / top video's own audio, from the clip's 0 s.
  */
-export async function encodeClip({ frames, from, to, audio = [], out, caption, crop = null, size = [1280, 720], overlays = [], left = null, crf = 22, tmp }) {
+export async function encodeClip({ frames, from, to, audio = [], out, caption, crop = null, size = [1280, 720], overlays = [], left = null, top = null, crf = 22, tmp }) {
+  if (left && top) throw new Error('encodeClip: left and top cannot be combined');
   fs.mkdirSync(tmp, { recursive: true });
   fs.mkdirSync(path.dirname(out), { recursive: true });
   const list = path.join(tmp, `${path.basename(out, '.mp4')}-frames.txt`);
@@ -224,17 +232,22 @@ export async function encodeClip({ frames, from, to, audio = [], out, caption, c
     n++;
   }
   let width = W;
-  if (left) {
-    inputs.push('-ss', String(left.start || 0), '-i', left.file);
-    g.push(`[${n}:v]settb=AVTB,fps=${FPS},scale=${left.w}:${H}:force_original_aspect_ratio=increase,crop=${left.w}:${H},setsar=1,trim=duration=${dur.toFixed(3)},setpts=PTS-STARTPTS[lv]`);
-    g.push(`[lv][${v}]hstack=inputs=2[hs]`);
-    v = 'hs';
-    width = left.w + W;
-    left.idx = n;
+  let height = H;
+  const side = left || top;
+  let sideIdx = null;
+  if (side) {
+    const [sw, sh] = left ? [left.w, H] : [W, top.h];
+    inputs.push('-ss', String(side.start || 0), '-i', side.file);
+    g.push(`[${n}:v]settb=AVTB,fps=${FPS},scale=${sw}:${sh}:force_original_aspect_ratio=increase,crop=${sw}:${sh},setsar=1,trim=duration=${dur.toFixed(3)},setpts=PTS-STARTPTS[sv]`);
+    g.push(`[sv][${v}]${left ? 'hstack' : 'vstack'}=inputs=2[st]`);
+    v = 'st';
+    if (left) width = sw + W;
+    else height = sh + H;
+    sideIdx = n;
     n++;
   }
   inputs.push('-i', caption.pill);
-  const cap = captionGraph(v, caption, n, width, H);
+  const cap = captionGraph(v, caption, n, width, height);
   g.push(cap.graph);
   n++;
   g.push(`[${cap.out}]format=yuv420p,trim=duration=${dur.toFixed(3)}[vout]`);
@@ -242,8 +255,9 @@ export async function encodeClip({ frames, from, to, audio = [], out, caption, c
   // Audio: every piece delayed to its place on the clip timeline, then mixed
   const pieces = [];
   for (const a of audio) {
-    if (a.leftAudio) {
-      pieces.push({ idx: left.idx, start: 0, end: null, delay: 0, fade: 0 });
+    if (a.sideAudio) {
+      if (sideIdx == null) throw new Error('encodeClip: sideAudio needs a left or top video');
+      pieces.push({ idx: sideIdx, start: 0, end: null, delay: 0, fade: 0 });
       continue;
     }
     inputs.push('-i', a.file);
@@ -300,15 +314,14 @@ export async function optimisePng(file) {
   else fs.rmSync(tmp);
 }
 
-/** Contact sheet: one frame per second, labelled with its time, 4 per row. */
-export async function contactSheet(video, out) {
+/** Contact sheet: one frame per second, labelled with its time, `cols` per row, each `w` px wide. */
+export async function contactSheet(video, out, { w = 400, cols = 4 } = {}) {
   const { duration, video: vs } = await probe(video);
   const count = Math.floor(duration) + 1;
-  const rows = Math.ceil(count / 4);
-  const w = 400;
+  const rows = Math.ceil(count / cols);
   const h = Math.round((vs.height / vs.width) * w / 2) * 2;
   await ffmpeg(['-i', video, '-vf',
-    `select='isnan(prev_selected_t)+gte(t-prev_selected_t,0.999)',scale=${w}:${h},drawtext=fontfile='${fontFile('en')}':text='%{eif\\:t\\:d} s':fontsize=22:fontcolor=white:box=1:boxcolor=black@0.7:boxborderw=4:x=6:y=6,tile=4x${rows}:padding=4:margin=4:color=gray`,
+    `select='isnan(prev_selected_t)+gte(t-prev_selected_t,0.999)',scale=${w}:${h},drawtext=fontfile='${fontFile('en')}':text='%{eif\\:t\\:d} s':fontsize=22:fontcolor=white:box=1:boxcolor=black@0.7:boxborderw=4:x=6:y=6,tile=${cols}x${rows}:padding=4:margin=4:color=gray`,
     '-frames:v', '1', '-fps_mode', 'vfr', '-q:v', '3', out]);
 }
 
