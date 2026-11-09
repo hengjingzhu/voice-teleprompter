@@ -14,6 +14,8 @@ const MIMES = [
   'video/webm;codecs=vp8,opus',
   'video/webm',
 ];
+import { t, codeText } from './i18n.js';
+
 const RETRY_MS = [500, 1000, 2000, 4000]; // waits before each new attempt of the same chunk
 const CHUNK_TIMEOUT_MS = 20000; // a hung request counts as failed; the server ignores a repeat of a chunk it already has
 
@@ -53,7 +55,7 @@ export class TakeRecorder {
 
   async start() {
     const r = await fetch('/api/takes', { method: 'POST' });
-    if (!r.ok) throw new Error('服务器没建成这一条');
+    if (!r.ok) throw new Error(t('err.createTake'));
     this.id = (await r.json()).id;
     this.mime = pickMime();
     this.ext = this.mime.includes('mp4') ? 'mp4' : 'webm';
@@ -122,7 +124,7 @@ export class TakeRecorder {
       body: JSON.stringify({ ext: this.ext, mime: this.mime, discarded, uploadFailed: this.failed, meta }),
     });
     const res = await r.json();
-    if (!r.ok) throw new Error(res.error || '保存失败');
+    if (!r.ok) throw new Error(res.error ? codeText(res.error) : t('err.saveFailed'));
     this.chunks = [];
     return { ...res, uploadFailed: this.failed };
   }

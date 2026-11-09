@@ -11,8 +11,9 @@
 import { normalizeWords, isStop, isNumeric } from './normalize.js';
 
 const COMMENT_RE = /^\/\//;
-const TARGET_RE = /^target\s*[:：]\s*(\d{1,3}):([0-5]\d)$/i;
-const LINE_RE = /^([A-Z][A-Za-z]*(?: [A-Z][A-Za-z]*)?)\s*(?:[:：]\s*(.*)|\s+[—–-]+\s*(.*))$/;
+// \uFF1A = the full-width colon a Chinese keyboard types
+const TARGET_RE = /^target\s*[:\uFF1A]\s*(\d{1,3}):([0-5]\d)$/i;
+const LINE_RE = /^([A-Z][A-Za-z]*(?: [A-Z][A-Za-z]*)?)\s*(?:[:\uFF1A]\s*(.*)|\s+[—–-]+\s*(.*))$/;
 const BOTH_RE = /^(both|all|together)$/i;
 const PHRASE_END = /[,.:;?!]["”’)]*$/;
 const SENTENCE_END = /[.?!:]["”’)]*$/;

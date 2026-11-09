@@ -1,6 +1,8 @@
 // Controller: state machine + mouse / keyboard, wiring recognition, alignment, display and recording together.
 //   setup (sound check) → ready → countdown → recording → saving → review → ready
 // Mouse while recording: left click does nothing (guards against stray clicks), wheel moves one phrase back or forward, hold left 1 s to stop and save, hold right 1 s to discard and restart the countdown at once.
+// Every mouse and keyboard control is an entry in shortcuts.js; the handlers below look the entry up and call ACTIONS[entry.action].
+// All text comes from i18n.js.
 
 import { buildAliasMap, normalizeText, similarity } from './normalize.js';
 import { parseScript } from './parse.js';
@@ -11,11 +13,12 @@ import { openStream, pickMime, TakeRecorder } from './recorder.js';
 import { Prompter, speakerColors } from './prompter.js';
 import { Editor } from './editor.js';
 import { estimate, measureWpm, fmtSec, DEFAULT_WPM } from './estimate.js';
+import { t, bind, unbind, codeText, hasKey, applyDom, getLang, setLang, htmlLang } from './i18n.js';
+import { BUTTONS, matchKey, matchPointerDown, matchClick, matchWheel, menuBlocked } from './shortcuts.js';
 
 const $ = (s) => document.querySelector(s);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const HOLD_MS = 1000;
 const INERTIA_AFTER = 700; // speaking, but no new word matched for this long → start inertia scrolling
 const INERTIA_MAX = 3000; // inertia runs at most this long, then waits in place for recognition
 const INERTIA_LEAD = 15; // inertia may run at most this many tokens ahead of the recognised position
@@ -68,6 +71,7 @@ const S = {
   testing: false,
   testDone: '',
   testCur: '',
+  lastReview: null,
 };
 let prompter;
 let editor;
@@ -78,12 +82,12 @@ function saveSettings() {
 
 let toastTimer = null;
 function toast(msg) {
-  const t = $('#toast');
-  if (!t.hidden && t.textContent === msg) return;
-  t.textContent = msg;
-  t.hidden = false;
+  const el = $('#toast');
+  if (!el.hidden && el.textContent === msg) return;
+  el.textContent = msg;
+  el.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.hidden = true; }, 4000);
+  toastTimer = setTimeout(() => { el.hidden = true; }, 4000);
 }
 
 function setState(st) {
@@ -114,12 +118,18 @@ function onExternalScript(text) {
   if (editor.isOpen) editor.external(text);
   if (['countdown', 'recording', 'saving'].includes(S.state)) { S.pendingScript = text; return; }
   applyScript(text);
-  if (!editor.isOpen) toast('script.md 改过了，提词已更新');
+  if (!editor.isOpen) toast(t('toast.scriptChanged'));
+}
+
+/** The error a failed API answer stands for: its server code when known, else the status. */
+async function apiError(r) {
+  const code = await r.json().then((j) => j?.error).catch(() => null);
+  return new Error(code && hasKey(`err.${code}`) ? codeText(code) : t('err.server', { status: r.status }));
 }
 
 async function saveScript(text) {
   const r = await fetch('/api/script', { method: 'PUT', body: text, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-  if (!r.ok) throw new Error(`服务器返回 ${r.status}`);
+  if (!r.ok) throw await apiError(r);
   applyScript(text);
 }
 
@@ -127,10 +137,10 @@ function updateHint() {
   if (!S.parsed) return;
   const { total } = estimate(S.parsed, S.stats.wpm);
   const target = S.parsed.targetSec;
-  const text = `预计 ${fmtSec(total)}${target ? ` / ${fmtSec(target)}` : ''}`;
-  for (const [sel, prefix] of [['#hint-est', ''], ['#setup-est', '稿子']]) {
+  const vars = { time: fmtSec(total), target: target ? fmtSec(target) : '' };
+  for (const [sel, key] of [['#hint-est', 'est.total'], ['#setup-est', 'est.script']]) {
     const est = $(sel);
-    est.textContent = prefix + text;
+    est.textContent = t(target ? `${key}Target` : key, vars);
     est.classList.toggle('over', !!target && total > target);
   }
 }
@@ -204,17 +214,20 @@ function onSpeechRestart() {
   S.wideUntil = performance.now() + 3000;
 }
 
+// Recognition status → i18n key
 const STATUS = {
-  listening: '正在听',
-  stopped: '已停',
-  network: '识别连不上网',
-  denied: '麦克风或识别被拒绝',
-  'no-mic': '没有麦克风',
-  unsupported: '这个浏览器没有语音识别，请用 Chrome',
+  listening: 'sr.listening',
+  stopped: 'sr.stopped',
+  network: 'sr.network',
+  denied: 'sr.denied',
+  'no-mic': 'sr.noMic',
+  unsupported: 'sr.unsupported',
 };
 function onSpeechStatus(s) {
-  $('#sr-status').textContent = STATUS[s] || s;
-  if (S.state === 'recording' && (s === 'network' || s === 'denied')) toast(`${STATUS[s]}，现在只能用滚轮`);
+  const el = $('#sr-status');
+  if (STATUS[s]) bind(el, STATUS[s]);
+  else unbind(el, s);
+  if (S.state === 'recording' && (s === 'network' || s === 'denied')) toast(t(s === 'network' ? 'toast.networkWheel' : 'toast.deniedWheel'));
 }
 
 // ── Record a take ───────────────────────────────────────────
@@ -231,7 +244,7 @@ function showCount(n) {
 
 async function startCountdown() {
   if (!['ready', 'review'].includes(S.state)) return;
-  if (!S.sim && !S.stream) { setState('setup'); toast('先打开摄像头和麦克风'); return; }
+  if (!S.sim && !S.stream) { setState('setup'); toast(t('toast.openMediaFirst')); return; }
   if (S.pendingScript) { applyScript(S.pendingScript); S.pendingScript = null; }
   enterFullscreen();
   S.matcher.reset();
@@ -257,7 +270,7 @@ async function startCountdown() {
     try {
       await S.rec.start();
     } catch (e) {
-      toast(`没开始录：${e.message}`);
+      toast(t('toast.recNotStarted', { msg: e.message }));
       S.speech.stop();
       S.rec = null;
       setState('ready');
@@ -344,11 +357,11 @@ async function stopTake(endedBy) {
   S.rec = null;
   const saving = rec
     ? rec.stop().then(() => rec.finish(meta, discarded))
-    : Promise.resolve({ file: '模拟，没存盘', stats: null });
+    : Promise.resolve({ file: null, sim: true, stats: null });
   if (discarded) {
     saving
-      .then((r) => { if (r.stats) S.stats = r.stats; toast(`作废的这条存为 ${r.file}`); })
-      .catch((e) => toast(`作废的这条没存上：${e.message}`));
+      .then((r) => { if (r.stats) S.stats = r.stats; toast(t('toast.discardSaved', { file: r.sim ? t('rv.simFile') : r.file })); })
+      .catch((e) => toast(t('toast.discardNotSaved', { msg: e.message })));
     setState('ready');
     startCountdown();
     return;
@@ -365,23 +378,24 @@ async function stopTake(endedBy) {
   showReview(meta, res, err);
 }
 
-// The server's finish note codes → review text (a later phase moves all UI text to the i18n table)
-const NOTES = {
-  E_NO_FFMPEG: () => 'ffmpeg 没转成，留的是浏览器原文件（没找到 ffmpeg）',
-  E_FFMPEG_FAILED: (detail) => `ffmpeg 没转成，留的是浏览器原文件${detail ? `（${detail}）` : ''}`,
-  E_GONE: () => '服务器上已没有这条的录像文件',
-};
+function renderReviewSum() {
+  const { meta, res, err } = S.lastReview;
+  // Discarding never opens the review (it restarts the countdown), so only these two can end here
+  const ended = { auto: t('rv.auto'), manual: t('rv.manual') }[meta.endedBy];
+  const file = res?.sim ? t('rv.simFile') : res?.file ?? t('rv.notSaved');
+  const bits = [file, fmtSec(meta.durationMs / 1000), ended, t('rv.missed', { n: meta.missed.length })];
+  if (meta.manual.length) bits.push(t('rv.skipped', { n: meta.manual.length }));
+  if (err) bits.push(t('rv.saveError', { msg: err.message }));
+  // The server's finish note codes (E_NO_FFMPEG, E_FFMPEG_FAILED, E_GONE) → text
+  if (res?.note) bits.push(codeText(res.note, res.noteDetail));
+  if (res?.uploadFailed) bits.push(t('rv.uploadFailed'));
+  $('#rv-sum').textContent = bits.join(' · ');
+}
 
 function showReview(meta, res, err) {
   const P = S.takeParsed;
-  // Discarding never opens the review (it restarts the countdown), so only these two can end here
-  const ended = { auto: '自动停', manual: '手动停' }[meta.endedBy];
-  const bits = [res?.file ?? '没存上', fmtSec(meta.durationMs / 1000), ended, `没对上 ${meta.missed.length} 个词`];
-  if (meta.manual.length) bits.push(`滚轮跳过 ${meta.manual.length} 个`);
-  if (err) bits.push(`保存出错：${err.message}`);
-  if (res?.note) bits.push(NOTES[res.note]?.(res.noteDetail) ?? res.note);
-  if (res?.uploadFailed) bits.push('上传断过，已另存一份到下载文件夹');
-  $('#rv-sum').textContent = bits.join(' · ');
+  S.lastReview = { meta, res, err };
+  renderReviewSum();
 
   const missed = new Set(meta.missed);
   const manual = new Set(meta.manual);
@@ -473,14 +487,14 @@ function frame(now) {
 function drawHold(now) {
   const ring = $('#hold');
   if (!S.hold) { ring.hidden = true; return; }
-  const p = Math.min(1, (now - S.hold.start) / HOLD_MS);
+  const p = Math.min(1, (now - S.hold.start) / S.hold.ms);
   ring.hidden = false;
   ring.dataset.kind = S.hold.kind;
   ring.querySelector('.fg').style.strokeDashoffset = String(RING * (1 - p));
   if (p >= 1) {
     const { kind } = S.hold;
     S.hold = null;
-    stopTake(kind === 'stop' ? 'manual' : 'discard');
+    ACTIONS[kind]();
   }
 }
 
@@ -498,7 +512,7 @@ async function openMedia() {
       saveSettings();
       return openMedia();
     }
-    $('#media-info').textContent = `打不开摄像头或麦克风：${e.message}`;
+    bind($('#media-info'), 'media.error', { msg: e.message });
     return;
   }
   S.stream = stream;
@@ -508,8 +522,8 @@ async function openMedia() {
   S.vad.resume();
   const v = stream.getVideoTracks()[0]?.getSettings() || {};
   const mime = pickMime();
-  $('#media-info').textContent = `画面 ${v.width}×${v.height} @${Math.round(v.frameRate || 0)}fps · 录制格式 ${mime || '这个浏览器不能录'}`;
-  $('#open-media').textContent = '重新打开摄像头和麦克风';
+  bind($('#media-info'), 'media.info', { w: v.width, h: v.height, fps: Math.round(v.frameRate || 0), mime: mime || { key: 'media.noRecorder' } });
+  bind($('#open-media'), 'setup.reopenMedia');
   const devs = await navigator.mediaDevices.enumerateDevices();
   const fill = (sel, kind, track) => {
     sel.textContent = '';
@@ -532,7 +546,8 @@ function drawMeter() {
 
 function renderTest() {
   const all = `${S.testDone} ${S.testCur}`.trim();
-  $('#sr-text').textContent = all || '（还没听到）';
+  if (all) unbind($('#sr-text'), all);
+  else bind($('#sr-text'), 'sr.nothing');
   const heard = normalizeText(all, S.aliasMap);
   const P = S.parsed;
   const list = $('#sr-check');
@@ -549,8 +564,8 @@ function renderTest() {
     const sentence = P.words.slice(p.wordStart, p.wordEnd).map((w) => w.text).join(' ');
     li.innerHTML = '<b></b> <span class="s"></span> <span class="n"></span>';
     li.querySelector('b').textContent = spk;
-    li.querySelector('.s').textContent = `「${sentence}」`;
-    li.querySelector('.n').textContent = `对上 ${hit}/${toks.length}`;
+    li.querySelector('.s').textContent = t('sr.quote', { text: sentence });
+    li.querySelector('.n').textContent = t('sr.matched', { n: hit, m: toks.length });
     list.append(li);
   }
 }
@@ -568,27 +583,69 @@ function stopTest() {
   if (!S.testing) return;
   S.testing = false;
   S.speech.stop();
-  $('#sr-test').textContent = '开始测试识别';
+  bind($('#sr-test'), 'sr.test');
 }
 
+// ── Language ────────────────────────────────────────────────
+function renderLangToggle() {
+  for (const b of document.querySelectorAll('#ui-lang button')) b.setAttribute('aria-pressed', String(b.dataset.lang === getLang()));
+}
+
+// Static text and bind()-ed elements re-translate in applyDom; text built here from several parts is rebuilt
+function onLangChange() {
+  S.settings.uiLang = getLang(); // setLang saved it; keep saveSettings from writing the old value back
+  renderLangToggle();
+  updateHint();
+  if ($('#sr-check').childElementCount) renderTest();
+  if (S.lastReview) renderReviewSum();
+  editor?.relang();
+}
+
+// ── Actions (what each entry in shortcuts.js does) ──────────
+const ACTIONS = {
+  start: () => startCountdown(),
+  stop: () => stopTake('manual'),
+  discard: () => stopTake('discard'),
+  cancel: () => cancelCountdown(),
+  toReady: () => setState('ready'),
+  next: () => stepPhrase(1),
+  prev: () => stepPhrase(-1),
+  step: (dir) => stepPhrase(dir),
+  editor: () => openEditor(),
+  setup: () => setState('setup'),
+  fontUp: () => setFont(S.settings.fontSize + 2),
+  fontDown: () => setFont(S.settings.fontSize - 2),
+  fullscreen: () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else enterFullscreen();
+  },
+  save: () => editor.save(),
+  close: () => editor.close(),
+};
+
 // ── Bindings ────────────────────────────────────────────────
-const isUi = (t) => !!t.closest?.('button, a, input, select, textarea, label');
+const isUi = (el) => !!el.closest?.('button, a, input, select, textarea, label');
 
 function bindUi() {
   $('#open-media').addEventListener('click', openMedia);
   $('#cam').addEventListener('change', () => { S.settings.camId = $('#cam').value; saveSettings(); openMedia(); });
   $('#mic').addEventListener('change', () => { S.settings.micId = $('#mic').value; saveSettings(); openMedia(); });
   $('#calib').addEventListener('click', async () => {
-    if (!S.vad) { toast('先打开麦克风'); return; }
+    if (!S.vad) { toast(t('toast.openMicFirst')); return; }
     const btn = $('#calib');
     btn.disabled = true;
-    $('#floor').textContent = '请保持安静 3 秒…';
+    bind($('#floor'), 'setup.calibrating');
     const f = await S.vad.calibrate(3000);
     S.settings.noiseFloor = f;
     saveSettings();
-    $('#floor').textContent = `底噪 ${f} dB，说话阈值 ${(f + 10).toFixed(1)} dB`;
+    bind($('#floor'), 'setup.floor', { floor: f, th: (f + 10).toFixed(1) });
     btn.disabled = false;
   });
+  $('#ui-lang').addEventListener('click', (e) => {
+    const lang = e.target.closest('button')?.dataset.lang;
+    if (lang && lang !== getLang()) setLang(lang);
+  });
+  document.addEventListener('langchange', onLangChange);
   $('#lang').value = S.settings.lang;
   $('#lang').addEventListener('change', () => {
     S.settings.lang = $('#lang').value;
@@ -604,11 +661,11 @@ function bindUi() {
     renderTest();
     S.speech.lang = S.settings.lang;
     S.speech.start();
-    $('#sr-test').textContent = '停止测试';
+    bind($('#sr-test'), 'sr.stopTest');
   });
   $('#fs').addEventListener('input', () => setFont(Number($('#fs').value)));
   $('#setup-done').addEventListener('click', () => {
-    if (!S.stream) { toast('先打开摄像头和麦克风'); return; }
+    if (!S.stream) { toast(t('toast.openMediaFirst')); return; }
     stopTest();
     setState('ready');
   });
@@ -618,40 +675,47 @@ function bindUi() {
     if (act === 'edit') openEditor();
     if (act === 'setup') setState('setup');
   });
-  $('#rv-open').addEventListener('click', () => fetch('/api/takes/open', { method: 'POST' }));
+  $('#rv-open').addEventListener('click', async () => {
+    try {
+      const r = await fetch('/api/takes/open', { method: 'POST' });
+      if (!r.ok) toast((await apiError(r)).message);
+    } catch (e) {
+      toast(e.message);
+    }
+  });
   $('#rv-setup').addEventListener('click', () => setState('setup'));
   $('#rv-back').addEventListener('click', () => setState('ready'));
 
+  // Mouse and keyboard: look up the entry in shortcuts.js, run its action
   window.addEventListener('contextmenu', (e) => {
-    if (!['setup', 'editor'].includes(S.state)) e.preventDefault();
+    if (menuBlocked(S.state)) e.preventDefault();
   });
   window.addEventListener('pointerdown', (e) => {
     S.vad?.resume();
-    if (S.state === 'recording') {
-      if (e.button === 0) S.hold = { kind: 'stop', start: performance.now() };
-      else if (e.button === 2) S.hold = { kind: 'discard', start: performance.now() };
-      return;
-    }
-    if (S.state === 'countdown' && e.button === 2) { cancelCountdown(); return; }
-    S.clickArmed = e.button === 0 && !isUi(e.target) && ['ready', 'review'].includes(S.state);
+    const m = matchPointerDown(S.state, e.button, isUi(e.target));
+    if (m.hold) S.hold = { kind: m.hold.action, ms: m.hold.hold, start: performance.now() };
+    else if (m.press) ACTIONS[m.press.action]();
+    else if ('arm' in m) S.clickArmed = m.arm;
   });
   window.addEventListener('pointerup', (e) => {
     S.hold = null;
-    if (!S.clickArmed || e.button !== 0) return;
+    // A click: pressed on empty space and released with the same button
+    if (!S.clickArmed || S.clickArmed !== BUTTONS[e.button]) return;
     S.clickArmed = false;
-    if (S.state === 'ready') startCountdown();
-    else if (S.state === 'review') setState('ready');
+    const hit = matchClick(S.state, e.button);
+    if (hit) ACTIONS[hit.action]();
   });
   window.addEventListener('wheel', (e) => {
-    if (!['ready', 'recording'].includes(S.state)) return;
-    e.preventDefault();
+    const hit = matchWheel(S.state);
+    if (!hit) return;
+    if (hit.prevent) e.preventDefault();
     S.wheelAcc += e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY;
     const now = performance.now();
     if (Math.abs(S.wheelAcc) < WHEEL_STEP || now - S.wheelAt < WHEEL_COOLDOWN) return;
     const dir = Math.sign(S.wheelAcc);
     S.wheelAcc = 0;
     S.wheelAt = now;
-    stepPhrase(dir);
+    ACTIONS[hit.action](dir);
   }, { passive: false });
   window.addEventListener('keydown', onKey);
   // With unsaved script edits, ask before closing / reloading the page (the draft is also kept in localStorage)
@@ -682,38 +746,19 @@ function closeEditor() {
 }
 
 function onKey(e) {
-  if (S.state === 'editor') {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); editor.save(); }
-    else if (e.key === 'Escape') { e.preventDefault(); editor.close(); }
-    return;
-  }
-  if (e.target.closest?.('input, textarea, select')) return;
-  const k = e.key;
-  const live = ['ready', 'recording'].includes(S.state);
-  if (k === ' ') {
-    e.preventDefault();
-    if (S.state === 'recording') stopTake('manual');
-    else startCountdown();
-  } else if (['ArrowRight', 'ArrowDown', 'PageDown'].includes(k)) {
-    e.preventDefault();
-    if (live) stepPhrase(1);
-  } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(k)) {
-    e.preventDefault();
-    if (live) stepPhrase(-1);
-  } else if (k === 'x' || k === 'X' || k === 'Escape') {
-    if (S.state === 'recording') stopTake('discard');
-    else if (S.state === 'countdown') cancelCountdown();
-  } else if (k === 'e' || k === 'E') openEditor();
-  else if (k === 'm' || k === 'M') { if (['ready', 'review'].includes(S.state)) setState('setup'); }
-  else if (k === '+' || k === '=') setFont(S.settings.fontSize + 2);
-  else if (k === '-' || k === '_') setFont(S.settings.fontSize - 2);
-  else if (k === 'f' || k === 'F') {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else enterFullscreen();
-  }
+  const { hit, prevent } = matchKey(S.state, {
+    key: e.key,
+    ctrl: e.ctrlKey || e.metaKey,
+    inField: !!e.target.closest?.('input, textarea, select'),
+  });
+  if (prevent) e.preventDefault();
+  if (hit) ACTIONS[hit.action]();
 }
 
 async function boot() {
+  document.documentElement.lang = htmlLang();
+  applyDom();
+  renderLangToggle();
   prompter = new Prompter($('#stage'));
   const [aliases, text, stats] = await Promise.all([
     fetch('/aliases.json').then((r) => r.json()),
@@ -738,11 +783,11 @@ async function boot() {
   const sim = new URLSearchParams(location.search).get('sim');
   if (sim) {
     S.sim = await fetch(`/fixtures/${encodeURIComponent(sim)}`).then((r) => r.json());
-    $('#hint-sim').textContent = ' · 模拟模式：不开麦、不录像';
+    bind($('#hint-sim'), 'hint.sim');
     setState('ready');
   } else {
     setState('setup');
-    if (!speechSupported) $('#sr-status').textContent = STATUS.unsupported;
+    if (!speechSupported) bind($('#sr-status'), STATUS.unsupported);
     // Camera was allowed before: open it right away
     try {
       const cam = await navigator.permissions.query({ name: 'camera' });

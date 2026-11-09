@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>提词器</title>
+<title data-i18n="app.title">Teleprompter</title>
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body data-state="boot">
@@ -21,48 +21,53 @@
 </svg></div>
 
 <div id="hint" hidden>
-  <span id="hint-est"></span> · 左键单击开始 · 滚轮预览 ·
-  <button data-act="edit">改稿 E</button> · <button data-act="setup">试音 M</button>
+  <span id="hint-est"></span> · <span data-i18n="hint.click">Click to start</span> · <span data-i18n="hint.wheel">Wheel to preview</span> ·
+  <button data-act="edit" data-i18n="btn.edit">Edit script E</button> · <button data-act="setup" data-i18n="btn.setup">Sound check M</button>
   <span id="hint-sim"></span>
 </div>
 
 <section id="setup" class="overlay" hidden>
   <div class="wrap">
-    <h1>试音</h1>
-    <p class="muted">两人坐好后在这里确认画面、声音和识别，然后进入提词。</p>
+    <div class="setup-head">
+      <h1 data-i18n="setup.title">Sound check</h1>
+      <div id="ui-lang" class="lang-toggle" role="group" data-i18n-title="setup.uiLang" title="Interface language">
+        <button type="button" data-lang="en" lang="en" aria-pressed="true">English</button><span aria-hidden="true">|</span><button type="button" data-lang="zh" lang="zh-CN" aria-pressed="false">中文</button>
+      </div>
+    </div>
+    <p class="muted" data-i18n="setup.intro">Get seated, then check the picture, the sound and the recognition before you start.</p>
     <div class="cols">
       <div>
         <div class="preview">
           <video id="pv" autoplay muted playsinline></video>
           <i class="guide v"></i><i class="guide h"></i>
         </div>
-        <p><button id="open-media">打开摄像头和麦克风</button></p>
-        <p><label>摄像头 <select id="cam"></select></label></p>
-        <p><label>麦克风 <select id="mic"></select></label></p>
+        <p><button id="open-media" data-i18n="setup.openMedia">Open camera and microphone</button></p>
+        <p><label><span data-i18n="setup.camera">Camera</span> <select id="cam"></select></label></p>
+        <p><label><span data-i18n="setup.mic">Microphone</span> <select id="mic"></select></label></p>
         <p id="media-info" class="muted"></p>
       </div>
       <div>
-        <h2>声音</h2>
+        <h2 data-i18n="setup.sound">Sound</h2>
         <div class="meter"><i id="meter-bar"></i><b id="meter-th"></b></div>
-        <p class="muted">竖线是「算在说话」的阈值。说话时条要明显越过竖线、变绿。</p>
-        <p><button id="calib">标定底噪（保持安静 3 秒）</button> <span id="floor"></span></p>
+        <p class="muted" data-i18n="setup.meterNote">The line is the speech threshold. When you talk, the bar should pass it clearly and turn green.</p>
+        <p><button id="calib" data-i18n="setup.calibrate">Calibrate noise floor (stay quiet for 3 s)</button> <span id="floor"></span></p>
 
-        <h2>识别</h2>
+        <h2 data-i18n="setup.recognition">Recognition</h2>
         <p>
-          <label>语言 <select id="lang"><option>en-US</option><option>en-AU</option><option>en-GB</option></select></label>
-          <button id="sr-test">开始测试识别</button> <span id="sr-status"></span>
+          <label><span data-i18n="setup.lang">Language</span> <select id="lang"><option>en-US</option><option>en-AU</option><option>en-GB</option></select></label>
+          <button id="sr-test" data-i18n="sr.test">Test recognition</button> <span id="sr-status"></span>
         </p>
-        <p class="muted">两人各读一遍自己的第一句。识别用的是系统默认麦克风，要联网。</p>
-        <div id="sr-text" class="srbox">（还没听到）</div>
+        <p class="muted" data-i18n="setup.srNote">Each speaker reads their own first sentence. Recognition uses the system default microphone and needs internet.</p>
+        <div id="sr-text" class="srbox" data-i18n="sr.nothing">(nothing heard yet)</div>
         <ul id="sr-check"></ul>
 
-        <h2>字号</h2>
+        <h2 data-i18n="setup.fontSize">Text size</h2>
         <p><input id="fs" type="range" min="36" max="80" step="2"> <span id="fs-val"></span></p>
       </div>
     </div>
     <p class="setup-foot">
-      <button id="setup-done" class="primary">完成，进入提词</button>
-      <button id="setup-edit">改稿 E</button>
+      <button id="setup-done" class="primary" data-i18n="setup.done">Done — start prompting</button>
+      <button id="setup-edit" data-i18n="btn.edit">Edit script E</button>
       <span id="setup-est"></span>
     </p>
   </div>
@@ -70,13 +75,15 @@
 
 <section id="editor" class="overlay" hidden>
   <header>
-    <b>改稿</b>
+    <b data-i18n="ed.title">Edit script</b>
     <span id="ed-est"></span>
     <span id="ed-wpm" class="muted"></span>
     <span id="ed-banner"></span>
     <span class="grow"></span>
-    <button id="ed-save" class="primary">保存 Ctrl+S</button>
-    <button id="ed-close">关闭 Esc</button>
+    <span class="actions">
+      <button id="ed-save" class="primary" data-i18n="ed.save">Save Ctrl+S</button>
+      <button id="ed-close" data-i18n="ed.close">Close Esc</button>
+    </span>
   </header>
   <div class="ed-body">
     <textarea id="ed-text" spellcheck="false"></textarea>
@@ -88,15 +95,17 @@
   <header>
     <span id="rv-sum"></span>
     <span class="grow"></span>
-    <button id="rv-open">打开 takes 文件夹</button>
-    <button id="rv-setup">回到试音 M</button>
-    <button id="rv-back" class="primary">回到提词</button>
+    <span class="actions">
+      <button id="rv-open" data-i18n="rv.open">Open takes folder</button>
+      <button id="rv-setup" data-i18n="rv.setup">Back to sound check M</button>
+      <button id="rv-back" class="primary" data-i18n="rv.back">Back to prompter</button>
+    </span>
   </header>
-  <p class="muted legend"><span class="missed">红</span> = 识别没对上（多半是识别听错，连成一片的才可能是真念错）　<span class="skip">黄</span> = 滚轮跳过　<span class="unreached">灰</span> = 没读到　· 单击空白处回到提词</p>
+  <p class="muted legend"><span class="missed" data-i18n="rv.red">Red</span><span data-i18n="rv.redMeans"> = not matched (usually misheard; a long red run may be a real slip) · </span><span class="skip" data-i18n="rv.yellow">Yellow</span><span data-i18n="rv.yellowMeans"> = skipped with the wheel · </span><span class="unreached" data-i18n="rv.grey">Grey</span><span data-i18n="rv.greyMeans"> = not reached · </span><span data-i18n="rv.clickBack">Click empty space to go back to the prompter</span></p>
   <div id="rv-body"></div>
 </section>
 
-<div id="saving" class="overlay" hidden><p>保存中…</p></div>
+<div id="saving" class="overlay" hidden><p data-i18n="rv.saving">Saving…</p></div>
 <div id="toast" hidden></div>
 
 <script type="module" src="/app.js"></script>
