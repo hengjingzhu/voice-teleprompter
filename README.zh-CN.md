@@ -13,7 +13,7 @@ https://github.com/user-attachments/assets/ff17caf7-fa1d-441f-b3f3-5d81a3b9e676
 
 ## 用来录创始人视频
 
-很多孵化器和加速器的申请都要一段创始人视频，常见 60 秒、90 秒或 120 秒，联合创始人最好都出镜。要卡在时长内，要说得自然，往往要录很多遍。这个提词器就是为这个做的。
+很多孵化器和加速器的申请都要一段创始人视频，一般 1 到 3 分钟，很多要求联合创始人都出镜。要卡在时长内，要说得自然，往往要录很多遍。这个提词器就是为这个做的。
 
 | 你要做到 | 它怎么帮你 |
 | --- | --- |
@@ -24,6 +24,32 @@ https://github.com/user-attachments/assets/ff17caf7-fa1d-441f-b3f3-5d81a3b9e676
 | 检查有没有漏说要点 | 每条录完的回看页上，没听到的词标成红色。 |
 | 交一个不超时的文件 | 跟 agent 说：「哪条最好？剪到 1:30。」它不重新编码直接剪，并确认最后一个词没被切掉。 |
 | 稿子不外传 | 稿子和录像都存在你自己的电脑上。只有麦克风的声音会发给 Google 做语音识别。 |
+
+### 哪些项目要交创始人视频
+
+以下内容在 2026-11-09 按各项目自己的官方页面核对过。每一期的要求可能会变，录之前请再看一眼官方页面。
+
+| 地区 | 项目 | 视频要求 | 时长 | 官方页面 |
+| --- | --- | --- | --- | --- |
+| 美国 | Y Combinator | 要交；所有创始人出镜，只能是创始人在说话 | 1 分钟 | [ycombinator.com/video](https://www.ycombinator.com/video) |
+| 美国 | PearX（Pear VC） | 必交；不公开的 YouTube 链接 | 1 分钟 | [pear.vc/pearx-application](https://pear.vc/pearx-application/) |
+| 美国 | Techstars | 团队视频，选填，但「强烈建议」 | 没写 | [Techstars 帮助页](https://help.techstars.com/support/solutions/articles/4000207082) |
+| 美国 | Alchemist Accelerator | 选填；介绍团队 + 讲项目 | 3 分钟以内 | [alchemist.vc/apply](https://www.alchemist.vc/apply) |
+| 美国 | Z Fellows | 选填 | 1 分钟 | [zfellows.com](https://zfellows.com) |
+| 美国 | a16z speedrun | 初审后受邀才交 | 没写 | [speedrun FAQ](https://speedrun.a16z.com/faq) |
+| 澳洲 | Startmate Accelerator | 必交 | 约 90 秒 | [startmate.com/accelerator](https://www.startmate.com/accelerator) |
+| 澳洲 | Sydney Genesis（悉尼大学） | 必交 | 最长 2 分钟 | [Sydney Genesis](https://www.sydney.edu.au/business/study/student-experience/sydney-genesis.html) |
+| 澳洲 | Melbourne Accelerator Program | 必交（项目介绍视频） | 没写 | [themap.co/accelerator](https://www.themap.co/accelerator) |
+| 澳洲 | UQ ilab Accelerator | 必交（介绍团队） | 没写 | [UQ Ventures](https://ventures.uq.edu.au/programs/ilab-accelerator) |
+| 澳洲 | LaunchVic 30X30（成长期公司） | 必交 | 最长 3 分钟 | [第 5 期指南（PDF）](https://assets.launchvic.org/app/uploads/2025/12/09142835/30X30-Program-Guidelines-Cohort-5-.pdf) |
+| 新加坡 | Big Idea Ventures Singapore Accelerator | 必交（代替书面的团队介绍） | 没写 | [bigideaventures.com](https://bigideaventures.com/singapore-accelerator/) |
+| 新加坡 | Surge（Peak XV） | 选填：交 deck，或者交 Loom 产品演示 + 介绍视频 | 没写 | [surge.peakxv.com/apply](https://surge.peakxv.com/apply) |
+| 新加坡 | SLINGSHOT（创业比赛） | 进前 250 名后必交 | 2 分钟 | [评选流程](https://slingshot.agorize.com/en/challenges/2026-edition/pages/selection-process?lang=en) |
+| 新加坡 | 南洋理工 Chua Thian Poh Pinnacle Prize（比赛） | 必交 | 最长 90 秒 | [NTU](https://www.ntu.edu.sg/ntupreneur/news-events/chua-thian-poh-pinnacle-prize/submission-and-evaluation-criteria) |
+
+Antler、Founder Institute、500 Global 的官方申请页上不要求创始人视频。
+
+**有些项目不希望你照稿念。** Y Combinator 写的是「Do not recite a written script: Use bullet points instead」（不要背稿，用要点），Techstars 的建议里也说不要照着屏幕念。申请这类项目时，在 `script.md` 里只写几条要点，自由发挥。字只跟着能对上的词走，所以用滚轮或方向键往下翻。也可以只用它来排练、看每条录多长。
 
 别的对着镜头念稿的视频也一样能用，比如产品介绍、给投资人的进展更新。
 

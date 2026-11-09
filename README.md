@@ -13,7 +13,7 @@ Vertical 9:16 version for phones: [English UI](https://github.com/hengjingzhu/vo
 
 ## Made for founder videos
 
-Many accelerator and incubator applications ask for a short founder video, often 60, 90 or 120 seconds, with every co-founder on camera. It has to fit the limit and sound natural, and it usually takes many attempts. This app was built for that.
+Many accelerator and incubator applications ask for a short founder video, usually 1 to 3 minutes, often with every co-founder on camera. It has to fit the limit and sound natural, and it usually takes many attempts. This app was built for that.
 
 | You need to | How it helps |
 | --- | --- |
@@ -24,6 +24,32 @@ Many accelerator and incubator applications ask for a short founder video, often
 | Check that no point was skipped | After each take, the review page marks the words that were not heard in red. |
 | Hand in a file under the limit | Ask your agent: "Which take is best? Cut it to 1:30." It cuts without re-encoding and checks that the last word is not cut off. |
 | Keep the pitch private | Scripts and recordings stay on your computer. Only the microphone audio goes to Google, for speech recognition. |
+
+### Programs that ask for a founder video
+
+Checked on 2026-11-09 against each program's own page. Rules change from intake to intake, so check the official page before you record.
+
+| Region | Program | Video | Length | Official page |
+| --- | --- | --- | --- | --- |
+| US | Y Combinator | Asked; all founders, only the founders talking | 1 min | [ycombinator.com/video](https://www.ycombinator.com/video) |
+| US | PearX (Pear VC) | Required; unlisted YouTube link | 1 min | [pear.vc/pearx-application](https://pear.vc/pearx-application/) |
+| US | Techstars | Team video, optional but "highly recommended" | not stated | [Techstars help](https://help.techstars.com/support/solutions/articles/4000207082) |
+| US | Alchemist Accelerator | Optional; team intro and pitch | 3 min or less | [alchemist.vc/apply](https://www.alchemist.vc/apply) |
+| US | Z Fellows | Optional | 1 min | [zfellows.com](https://zfellows.com) |
+| US | a16z speedrun | Only if invited after the first review | not stated | [speedrun FAQ](https://speedrun.a16z.com/faq) |
+| Australia | Startmate Accelerator | Required | about 90 s | [startmate.com/accelerator](https://www.startmate.com/accelerator) |
+| Australia | Sydney Genesis (University of Sydney) | Required | up to 2 min | [Sydney Genesis](https://www.sydney.edu.au/business/study/student-experience/sydney-genesis.html) |
+| Australia | Melbourne Accelerator Program | Required (pitch video) | not stated | [themap.co/accelerator](https://www.themap.co/accelerator) |
+| Australia | UQ ilab Accelerator | Required (team intro) | not stated | [UQ Ventures](https://ventures.uq.edu.au/programs/ilab-accelerator) |
+| Australia | LaunchVic 30X30 (scale-ups) | Required | up to 3 min | [Cohort 5 guidelines (PDF)](https://assets.launchvic.org/app/uploads/2025/12/09142835/30X30-Program-Guidelines-Cohort-5-.pdf) |
+| Singapore | Big Idea Ventures Singapore Accelerator | Required (replaces the written team section) | not stated | [bigideaventures.com](https://bigideaventures.com/singapore-accelerator/) |
+| Singapore | Surge (Peak XV) | Optional: a deck, or a Loom product demo + pitch video | not stated | [surge.peakxv.com/apply](https://surge.peakxv.com/apply) |
+| Singapore | SLINGSHOT (startup competition) | Required for the top 250 | 2 min | [Selection process](https://slingshot.agorize.com/en/challenges/2026-edition/pages/selection-process?lang=en) |
+| Singapore | NTU Chua Thian Poh Pinnacle Prize (competition) | Required | up to 90 s | [NTU](https://www.ntu.edu.sg/ntupreneur/news-events/chua-thian-poh-pinnacle-prize/submission-and-evaluation-criteria) |
+
+Antler, Founder Institute and 500 Global do not ask for a founder video on their official application pages.
+
+**Some programs do not want a read script.** Y Combinator writes "Do not recite a written script: Use bullet points instead", and Techstars' tips say not to read from a screen. For those, put short bullet points in `script.md` and talk freely. The text only follows words it can match, so move on with the wheel or the arrow keys. Or use the app to rehearse and time your takes.
 
 It works the same for other scripted videos to camera, such as product intros or investor updates.
 
