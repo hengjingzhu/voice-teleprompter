@@ -5,7 +5,7 @@
 A teleprompter that runs in Chrome. It listens while you read, scrolls the script with your voice, shows the next speaker's name just before their turn, and records the webcam. It works for one speaker or several taking turns.
 
 <!-- media:hero -->
-https://github.com/user-attachments/assets/bd3078d3-245e-4f53-8317-ed04aad76ec8
+https://github.com/user-attachments/assets/b38d3c8b-7656-4c5c-8879-485754497707
 
 Vertical 9:16 version for phones: [English UI](https://github.com/hengjingzhu/voice-teleprompter/releases/download/v1.0.0/voice-teleprompter-demo-vertical-en.mp4) · [Chinese UI](https://github.com/hengjingzhu/voice-teleprompter/releases/download/v1.0.0/voice-teleprompter-demo-vertical-zh.mp4)
 
@@ -53,7 +53,7 @@ On the first start, `script.md` is created from [`examples/demo-two-speakers.md`
 ![Sound check page](docs/media/en/setup.png)
 
 <!-- media:setup -->
-https://github.com/user-attachments/assets/cdd4eb8f-f676-4a2b-8240-540ac89af4e4
+https://github.com/user-attachments/assets/d8f2b462-3b7f-491f-a41e-097e0b874f62
 
 - <b>Open camera and microphone</b>, then pick them in the lists if you have more than one. The lines on the preview help you frame two people.
 - <b>Calibrate noise floor (stay quiet for 3 s)</b>. When you talk, the level bar should pass the line clearly and turn green.
@@ -67,7 +67,7 @@ The interface language switch (English | 中文) is at the top right of this pag
 ![Recording, with the next speaker's cue](docs/media/en/recording.png)
 
 <!-- media:follow -->
-https://github.com/user-attachments/assets/6756fc2f-e9bd-478c-a410-2b46f060cd87
+https://github.com/user-attachments/assets/db6f5d01-712b-4d2d-8b23-3fca04a03e2d
 
 - Click on empty space (or press <kbd>Space</kbd>) to start. A 3-2-1 countdown runs, the page goes full screen, and recording starts at the end of the countdown.
 - Read at the line near the top of the screen. The text moves with your voice. During the last paragraph before someone else's turn, their name appears on the left with an arrow, for example `JESS →`.
@@ -77,7 +77,7 @@ https://github.com/user-attachments/assets/6756fc2f-e9bd-478c-a410-2b46f060cd87
 ### 3. Stop, or start again
 
 <!-- media:controls -->
-https://github.com/user-attachments/assets/32282b9d-226f-4ddf-9664-b1fd4364b5c3
+https://github.com/user-attachments/assets/35d839bb-97cd-43b9-bd56-85141ac019b0
 
 - **Stop and save:** hold the left mouse button for 1 second (or press <kbd>Space</kbd>). The pointer is hidden while recording; a small ring in the top right corner fills while you hold.
 - **Discard and start again:** hold the right mouse button for 1 second (or press <kbd>X</kbd>). The take is kept with `-x` in its name and a new countdown starts. In full screen, Chrome uses <kbd>Esc</kbd> to leave full screen, so use <kbd>X</kbd> there.
@@ -155,7 +155,7 @@ All the rules, with an example for each: [`examples/format-reference.md`](exampl
 ![Script editor](docs/media/en/editor.png)
 
 <!-- media:editor -->
-https://github.com/user-attachments/assets/7a0c4ee5-94be-4489-af31-ca0c0cc0bc9e
+https://github.com/user-attachments/assets/2dc0362a-7b42-4b15-b8a7-5e9cf24e1224
 
 Press <kbd>E</kbd> for the editor. The right side shows how the script will be split into speakers and blocks, with the seconds for each block and the estimate at the top. <b>Save</b> writes `script.md` and keeps the old version in `backups/`. If you edit `script.md` in another program, the page reloads it by itself (after the take, if one is being recorded).
 
@@ -179,7 +179,7 @@ Chrome usually records MP4 (H.264). With ffmpeg installed, the server turns each
 ## Example output
 
 <!-- media:opening -->
-https://github.com/user-attachments/assets/0a07157e-8e37-40d4-a112-9e373c8b6759
+https://github.com/user-attachments/assets/f55872fb-30c1-4156-b495-c11f7a74cb64
 
 <sub>Illustration of what a take looks like. This clip was generated with AI for the demo; it was not recorded by the app.</sub>
 

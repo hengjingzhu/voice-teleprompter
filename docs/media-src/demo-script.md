@@ -1,16 +1,18 @@
-Target: 1:00
+Target: 1:10
 // Note for readers: read at an easy pace. The next speaker's name shows before their line.
 
 Wei: Hi, I'm Wei.
 Jess: I'm Jess, and we built ChillaHub.
 Wei: We help small sellers reach shoppers in other countries.
+Jess: Without the late nights.
+Wei: Well, fewer late nights.
 
 Jess — How it works
 You upload your product photos and details once.
 Then you check and confirm the facts.
 We call that Product Truth.
 
-Wei:
+Wei: That's the part we never guess.
 From Product Truth, we create images, listings and videos.
 Each is made for its market and its platform.
 

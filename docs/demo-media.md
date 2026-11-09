@@ -32,9 +32,9 @@ For each UI language (`en`, `zh`). The spoken script is English in both.
 | --- | --- |
 | `demo-script.md` | The demo script. The same text as `examples/demo-two-speakers.md`. |
 | `voice-full.flac` | The whole script read aloud by the two AI voices, mono 48 kHz. FLAC is lossless; `voice-full.wav` also works. |
-| `timings.json` | Word times of the voice: `[{ word, startMs, endMs, script? }]`. `script` is the script's spelling when the transcriber wrote the word differently (`ChillerHub` → `ChillaHub.`). |
+| `timings.json` | Word times of the voice: `[{ word, startMs, endMs, script? }]`. `script` is the script's spelling when the transcriber wrote the word differently (`Chiller Hub.` → `ChillaHub.`). |
 | `lines.json` | Each script line: `{ speaker, text, startMs, endMs }`. Either an array or `{ lines: [...], opening: { endMs } }`. |
-| `opening.mp4` | A static webcam shot of both people saying the first lines of the script (0–18.3 s), lip-synced to the start of the voice. 1280×720. Its length sets the length of the hero clips. It is two generations joined where the speaker changes (9.5 s, a 0.2 s cross-dissolve), and its audio is the exact first 18.3 s of the voice, not the generations' own audio. |
+| `opening.mp4` | A static webcam shot of both people saying the first lines of the script (0–20.75 s), lip-synced to the start of the voice. 1280×720. Its length sets the length of the hero clips. It is three generations joined in pauses where the speaker changes (at 4.6 s and 12.1 s, 0.2 s cross-dissolves), and its audio is the exact first 20.75 s of the voice, not the generations' own audio. |
 | `idle-loop.mp4` | The same shot, both people silent. It loops. No audio. |
 
 `opening-voice.wav` is not stored. The pipeline cuts it from the voice: 0 to `opening.endMs` in `lines.json`, else to the end of `opening.mp4`. It must be the exact start of the voice, because the opening clip and the prompter follow the same audio. An `opening-voice.wav` in the source folder is used as it is, and checked against the voice.
@@ -100,7 +100,7 @@ Every clip is recorded with the CDP screencast at 1280×720 (JPEG quality 92), n
 
 **A/V error** in the table is the gap, in ms, between where the video shows a moment and where the audio has it: the median and the worst over all checks. For follow, controls, hero and hero-vertical it is checked at each countdown state change; for setup at each of the first 90 camera frames (lips against voice). One frame at 30 fps is 33 ms; the target is less than that. A single late screencast frame can go slightly over; the median stays well under.
 
-**Onset check** finds where sound starts in the finished MP4 (ffmpeg `silencedetect`, -40 dB) and subtracts where the plan puts the voice's first sound (measured the same way on `voice-full`). 0 means the audio sits where the logs say it should. The word times in `timings.json` are not used for this: the transcriber's first word starts about 60 ms after the sound does (480 ms against 418 ms in the current voice).
+**Onset check** finds where sound starts in the finished MP4 (ffmpeg `silencedetect`, -40 dB) and subtracts where the plan puts the voice's first sound (measured the same way on `voice-full`). 0 means the audio sits where the logs say it should. The word times in `timings.json` are not used for this: the transcriber's first word starts about 50 ms after the sound does (440 ms against 388 ms in the current voice).
 
 Known limit: in `opening.mp4` each speaker's mouth opens 0.2–0.5 s before their voice. That is in the generated clip, not in the pipeline.
 
