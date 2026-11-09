@@ -15,7 +15,7 @@ function writeDraft(text) {
 }
 
 import { parseScript } from './parse.js';
-import { estimate, fmtSec, TARGET_SEC, DEFAULT_WPM } from './estimate.js';
+import { estimate, fmtSec, DEFAULT_WPM } from './estimate.js';
 import { speakerColors } from './prompter.js';
 
 export class Editor {
@@ -120,8 +120,9 @@ export class Editor {
     const stats = this.getStats() || {};
     const wpm = stats.wpm || {};
     const { per, total } = estimate(parsed, wpm);
-    const over = total > TARGET_SEC;
-    this.est.textContent = `预计 ${fmtSec(total)} / ${fmtSec(TARGET_SEC)}${this.dirty ? '（未保存）' : ''}`;
+    const target = parsed.targetSec;
+    const over = !!target && total > target;
+    this.est.textContent = `预计 ${fmtSec(total)}${target ? ` / ${fmtSec(target)}` : ''}${this.dirty ? '（未保存）' : ''}`;
     this.est.classList.toggle('over', over);
     this.wpm.textContent = parsed.speakers.map((s) => {
       const n = stats.samples?.[s]?.length || 0;

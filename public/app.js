@@ -10,7 +10,7 @@ import { Vad } from './vad.js';
 import { openStream, pickMime, TakeRecorder } from './recorder.js';
 import { Prompter, speakerColors } from './prompter.js';
 import { Editor } from './editor.js';
-import { estimate, measureWpm, fmtSec, DEFAULT_WPM, TARGET_SEC } from './estimate.js';
+import { estimate, measureWpm, fmtSec, DEFAULT_WPM } from './estimate.js';
 
 const $ = (s) => document.querySelector(s);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -126,11 +126,12 @@ async function saveScript(text) {
 function updateHint() {
   if (!S.parsed) return;
   const { total } = estimate(S.parsed, S.stats.wpm);
-  const text = `预计 ${fmtSec(total)} / ${fmtSec(TARGET_SEC)}`;
+  const target = S.parsed.targetSec;
+  const text = `预计 ${fmtSec(total)}${target ? ` / ${fmtSec(target)}` : ''}`;
   for (const [sel, prefix] of [['#hint-est', ''], ['#setup-est', '稿子']]) {
     const est = $(sel);
     est.textContent = prefix + text;
-    est.classList.toggle('over', total > TARGET_SEC);
+    est.classList.toggle('over', !!target && total > target);
   }
 }
 

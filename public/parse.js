@@ -4,9 +4,14 @@
 //   Both: Thanks!                                           → both speakers together
 // Each line is a paragraph. A leading number such as "1." still shows; for matching it is an optional token (followed whether read or not).
 // A line like "Upload: ..." (capitalised word + colon) is not a speaker: a speaker must appear at least once in the bare-colon / dash form, or at least twice.
+// Lines starting with // are comments: dropped before anything else (not shown, not read, not counted).
+// If the first remaining line is "Target: m:ss", it sets parsed.targetSec (the time limit shown on the page) and is dropped.
+// "Target: …" anywhere else, or in another form, is ordinary text.
 
 import { normalizeWords, isStop, isNumeric } from './normalize.js';
 
+const COMMENT_RE = /^\/\//;
+const TARGET_RE = /^target\s*[:：]\s*(\d{1,3}):([0-5]\d)$/i;
 const LINE_RE = /^([A-Z][A-Za-z]*(?: [A-Z][A-Za-z]*)?)\s*(?:[:：]\s*(.*)|\s+[—–-]+\s*(.*))$/;
 const BOTH_RE = /^(both|all|together)$/i;
 const PHRASE_END = /[,.:;?!]["”’)]*$/;
@@ -22,7 +27,14 @@ function fnv(text) {
 }
 
 export function parseScript(text, aliasMap) {
-  const lines = String(text).replace(/\r\n?/g, '\n').split('\n').map((l) => l.trim());
+  const lines = String(text).replace(/\r\n?/g, '\n').split('\n').map((l) => (COMMENT_RE.test(l.trim()) ? '' : l.trim()));
+  let targetSec = null;
+  const first = lines.findIndex(Boolean);
+  const tm = first >= 0 ? TARGET_RE.exec(lines[first]) : null;
+  if (tm) {
+    targetSec = Number(tm[1]) * 60 + Number(tm[2]);
+    lines[first] = '';
+  }
 
   const counts = new Map();
   const strong = new Set();
@@ -145,5 +157,5 @@ export function parseScript(text, aliasMap) {
   const speakers = [];
   for (const b of blocks) if (b.speaker && !b.both && !speakers.includes(b.speaker)) speakers.push(b.speaker);
 
-  return { text, hash: fnv(text), blocks, paras, words, tokens, phraseStarts, speakers };
+  return { text, hash: fnv(text), targetSec, blocks, paras, words, tokens, phraseStarts, speakers };
 }

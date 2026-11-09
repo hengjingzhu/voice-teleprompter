@@ -4,8 +4,8 @@
 // (The first version dropped pauses over 1.5 s. It estimated two real takes at 89 / 80 s; they ran 102 / 106 s.)
 // The server keeps each speaker's last 5 samples and uses the median (stats.json).
 
+// The time limit is not fixed here: a script may set one with a first line like "Target: 1:30" (parsed.targetSec).
 export const DEFAULT_WPM = 130;
-export const TARGET_SEC = 90;
 const LEAD_SEC = 1.5;
 const BOTH_SEC = 1;
 const TAIL_SEC = 2;

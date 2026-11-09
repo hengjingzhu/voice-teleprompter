@@ -64,6 +64,47 @@ test('phrases split at punctuation, at least one per paragraph', () => {
   assert.equal(parsed.phraseStarts[0], 0);
 });
 
+test('// comment lines add no words or tokens', () => {
+  const p = parseScript('// a note\nAlex: Hello there.\n  // indented note\nAlex: Bye.', aliasMap);
+  assert.deepEqual(p.tokens.map((t) => t.t), ['hello', 'there', 'bye']);
+  assert.equal(p.paras.length, 2);
+  // "//" in the middle of a line is ordinary text
+  const q = parseScript('Visit chillahub.ai // today', aliasMap);
+  assert.ok(q.words.some((w) => w.text === '//'));
+});
+
+test('"Target: m:ss" on the first line sets the limit and is never a speaker', () => {
+  const p = parseScript('// note first\nTarget: 1:05\nAlex: Hi.\nAlex: Bye.', aliasMap);
+  assert.equal(p.targetSec, 65);
+  assert.deepEqual(p.speakers, ['Alex']);
+  assert.ok(!p.words.some((w) => /target/i.test(w.text)));
+  assert.equal(parseScript('target : 0:45\nHi.', aliasMap).targetSec, 45);
+  assert.equal(parseScript('Hi.', aliasMap).targetSec, null);
+});
+
+test('"Target:" anywhere else, or in another form, is spoken text', () => {
+  const later = parseScript('Alex: Hi.\nTarget: 1:00', aliasMap);
+  assert.equal(later.targetSec, null);
+  assert.ok(later.words.some((w) => w.text === 'Target:'));
+  for (const bad of ['Target: 90', 'Target: 1:75', 'Target: one minute']) {
+    const p = parseScript(`${bad}\nHi.`, aliasMap);
+    assert.equal(p.targetSec, null, bad);
+    assert.equal(p.words[0].text, 'Target:', bad);
+  }
+});
+
+test('every example script parses, has speakers or text, and sets a Target', () => {
+  const dir = new URL('../examples/', import.meta.url);
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md'));
+  assert.ok(files.includes('demo-two-speakers.md'));
+  for (const f of files) {
+    const p = parseScript(fs.readFileSync(new URL(f, dir), 'utf8'), aliasMap);
+    assert.ok(p.tokens.length > 20, f);
+    assert.ok(p.targetSec > 0, f);
+    assert.ok(!p.words.some((w) => w.text.startsWith('//')), `${f}: a comment leaked into the text`);
+  }
+});
+
 test('a "Name: text" line seen once, with no empty-colon form, is not a speaker', () => {
   const p = parseScript('Alex:\nNote: this is a line.\nMore text.', aliasMap);
   assert.equal(p.blocks.length, 1);
